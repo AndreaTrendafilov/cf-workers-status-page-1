@@ -136,25 +136,9 @@ export function useKeyPress(targetKey) {
   return keyPressed
 }
 
-export async function getCheckLocation(request) {
-  const regionHeader = request.headers.get('CF-IPCountry');
-
-  // Specify the desired regions (country codes)
-  const allowedRegions = ['SOF', 'FRA', 'ATH'];
-  const maxRetries = 3;
-  let retries = 0;
-
-  while (retries < maxRetries) {
-    if (!allowedRegions.includes(regionHeader)) {
-      retries++;
-      continue;
-    }
-
-    const res = await fetch('https://cloudflare-dns.com/dns-query', {
-      method: 'OPTIONS',
-    });
-    return res.headers.get('cf-ray').split('-')[1];
-  }
-
-  throw new Error('Region not allowed after ' + maxRetries + ' retries');
+export async function getCheckLocation() {
+  const res = await fetch('https://cloudflare-dns.com/dns-query', {
+    method: 'OPTIONS',
+  })
+  return res.headers.get('cf-ray').split('-')[1]
 }
