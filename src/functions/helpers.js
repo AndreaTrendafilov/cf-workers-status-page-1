@@ -136,9 +136,13 @@ export function useKeyPress(targetKey) {
   return keyPressed
 }
 
-export async function getCheckLocation() {
+export async function getCheckLocation(request) {
+  const regionHeader = request.headers.get('CF-IPCountry');
+
+  // Specify the desired regions (country codes)
+  const allowedRegions = ['SOF', 'FRA', 'ATH'];
   const res = await fetch('https://cloudflare-dns.com/dns-query', {
     method: 'OPTIONS',
-  })
-  return res.headers.get('cf-ray').split('-')[1]
+  });
+  return res.headers.get('cf-ray').split('-')[1];
 }
