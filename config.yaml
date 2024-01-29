@@ -2,7 +2,7 @@ settings:
   title: 'Status Page'
   url: 'https://status.tikvite.org' # used for Slack messages
   logo: logo-192x192.png # image in ./public/ folder
-  daysInHistogram: 365 # number of days you want to display in histogram
+  daysInHistogram: 92 # number of days you want to display in histogram
   collectResponseTimes: true # collects avg response times from CRON locations
 
   allmonitorsOperational: 'All Systems Operational'
@@ -28,6 +28,14 @@ monitors:
     name: Chat
     description: 'If it dies, it dies.'
     url: 'https://chat.tikvite.org'
+    method: GET
+    expectStatus: 200
+    linkable: true # allows the title to be a link, default=true
+
+      - id: tikvite-duckdns-org
+    name: DDNS
+    description: 'just in case'
+    url: 'https://tikvite.duckdns.org'
     method: GET
     expectStatus: 200
     linkable: true # allows the title to be a link, default=true
