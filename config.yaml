@@ -32,7 +32,7 @@ monitors:
     expectStatus: 200
     linkable: true # allows the title to be a link, default=true
 
-      - id: tikvite-duckdns-org
+  - id: tikvite-duckdns-org
     name: DDNS
     description: 'just in case'
     url: 'https://tikvite.duckdns.org'
