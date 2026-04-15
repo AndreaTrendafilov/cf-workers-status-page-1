@@ -7,11 +7,11 @@ import {
 } from '../functions/monitorSeries'
 
 const W = 400
-const H = 72
+const H = 58
 const PAD_L = 36
 const PAD_R = 6
-const PAD_T = 6
-const PAD_B = 14
+const PAD_T = 5
+const PAD_B = 6
 const INNER_W = W - PAD_L - PAD_R
 const INNER_H = H - PAD_T - PAD_B
 
@@ -58,18 +58,6 @@ function FleetFailsBars({ series }) {
           </g>
         )
       })}
-      {n > 0 && series[0]?.day && series[n - 1]?.day && (
-        <text
-          x={W / 2}
-          y={H - 3}
-          textAnchor="middle"
-          className="font-mono tabular-nums"
-        >
-          {series[0].day === series[n - 1].day
-            ? series[0].day
-            : `${series[0].day} → ${series[n - 1].day}`}
-        </text>
-      )}
     </svg>
   )
 }
@@ -166,20 +154,19 @@ function FleetLatencyLine({ series }) {
           </g>
         )
       })}
-      {n > 0 && series[0]?.day && series[n - 1]?.day && (
-        <text
-          x={W / 2}
-          y={H - 3}
-          textAnchor="middle"
-          className="font-mono tabular-nums"
-        >
-          {series[0].day === series[n - 1].day
-            ? series[0].day
-            : `${series[0].day} → ${series[n - 1].day}`}
-        </text>
-      )}
     </svg>
   )
+}
+
+/** Readable date range below fleet charts (not SVG — avoids 6px text). */
+function fleetChartDateRange(series) {
+  const n = series?.length ?? 0
+  if (n === 0 || !series[0]?.day || !series[n - 1]?.day) {
+    return null
+  }
+  const a = series[0].day
+  const b = series[n - 1].day
+  return a === b ? a : `${a} → ${b}`
 }
 
 export default function DashboardOverviewCharts({ monitors, kvMonitors }) {
@@ -208,6 +195,8 @@ export default function DashboardOverviewCharts({ monitors, kvMonitors }) {
 
   const { up, degraded, down, noData, total } = summary
   const t = Math.max(total, 1)
+  const failRangeLabel = fleetChartDateRange(failSeries)
+  const latencyRangeLabel = fleetChartDateRange(latencySeries)
 
   return (
     <section
@@ -282,8 +271,15 @@ export default function DashboardOverviewCharts({ monitors, kvMonitors }) {
             <div className="mb-1 text-[10px] font-medium text-gruv-l-muted dark:text-gruv-d-muted leading-snug">
               {s.dashboardFleetFailsTitle ?? 'Failed checks per day (fleet)'}
             </div>
-            <div className="fleet-chart-wrap rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg dark:bg-gruv-d-bg-soft">
-              <FleetFailsBars series={failSeries} />
+            <div className="rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg dark:bg-gruv-d-bg-soft overflow-hidden">
+              <div className="fleet-chart-inner">
+                <FleetFailsBars series={failSeries} />
+              </div>
+              {failRangeLabel && (
+                <p className="px-2 py-2 sm:py-2.5 text-center text-sm sm:text-base font-mono font-medium tabular-nums leading-snug text-gruv-l-fg dark:text-gruv-d-fg border-t border-gruv-l-border/60 dark:border-gruv-d-border/70 bg-gruv-l-surface/50 dark:bg-gruv-d-surface/40">
+                  {failRangeLabel}
+                </p>
+              )}
             </div>
           </div>
 
@@ -293,8 +289,15 @@ export default function DashboardOverviewCharts({ monitors, kvMonitors }) {
                 {s.dashboardFleetLatencyTitle ??
                   'Mean response time (monitors with data)'}
               </div>
-              <div className="fleet-chart-wrap rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg dark:bg-gruv-d-bg-soft">
-                <FleetLatencyLine series={latencySeries} />
+              <div className="rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg dark:bg-gruv-d-bg-soft overflow-hidden">
+                <div className="fleet-chart-inner">
+                  <FleetLatencyLine series={latencySeries} />
+                </div>
+                {latencyRangeLabel && (
+                  <p className="px-2 py-2 sm:py-2.5 text-center text-sm sm:text-base font-mono font-medium tabular-nums leading-snug text-gruv-l-fg dark:text-gruv-d-fg border-t border-gruv-l-border/60 dark:border-gruv-d-border/70 bg-gruv-l-surface/50 dark:bg-gruv-d-surface/40">
+                    {latencyRangeLabel}
+                  </p>
+                )}
               </div>
             </div>
           )}

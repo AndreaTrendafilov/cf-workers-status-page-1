@@ -131,23 +131,14 @@
       0 2px 12px rgba(0, 0, 0, 0.2);
   }
 
-  .fleet-chart-wrap {
+  .fleet-chart-inner {
     @apply w-full overflow-hidden;
-    max-height: 4.25rem;
+    max-height: 4.5rem;
   }
 
-  .fleet-chart-wrap svg {
+  .fleet-chart-inner svg {
     @apply block w-full h-auto;
-    max-height: 4.25rem;
-  }
-
-  .fleet-chart-wrap svg text {
-    fill: #665c54;
-    font-size: 6.25px;
-  }
-
-  html.dark .fleet-chart-wrap svg text {
-    fill: #a89984;
+    max-height: 4.5rem;
   }
 
   .failure-chart-wrap svg text {
