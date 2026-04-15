@@ -19,18 +19,19 @@ export default function MonitorLatencySparkline({ monitorId, kvMonitor }) {
 
     content = series.map(({ day, avgMs }, key) => {
       let heightPct = 0
-      let barClass = 'lat-bar-inner bg-gray-300 dark:bg-gray-600'
+      let barClass =
+        'lat-bar-inner bg-gruv-l-border dark:bg-gruv-d-surface-2'
 
       const fails = kvMonitor?.checks?.[day]?.fails
       if (avgMs != null) {
         const norm = (avgMs - min) / span
         heightPct = 12 + Math.round(norm * 88)
         if (typeof fails === 'number' && fails > 0) {
-          barClass = 'lat-bar-inner bg-yellow-500 dark:bg-yellow-700'
+          barClass = 'lat-bar-inner bg-gruv-accent-yellow opacity-90'
         } else if (avgMs > min + span * 0.65) {
-          barClass = 'lat-bar-inner bg-amber-400 dark:bg-amber-600'
+          barClass = 'lat-bar-inner bg-gruv-accent-orange opacity-90'
         } else {
-          barClass = 'lat-bar-inner bg-blue-400 dark:bg-blue-600'
+          barClass = 'lat-bar-inner bg-gruv-accent-blue opacity-90'
         }
       }
 
@@ -52,7 +53,7 @@ export default function MonitorLatencySparkline({ monitorId, kvMonitor }) {
               kvMonitor.checks?.[day]?.fails > 0 && (
                 <>
                   <br />
-                  <span className="text-yellow-700 dark:text-yellow-300">
+                  <span className="text-gruv-accent-yellow dark:text-gruv-accent-yellow">
                     {kvMonitor.checks[day].fails}{' '}
                     {config.settings.graphLatencyFailHint ?? 'failed check(s)'}
                   </span>
@@ -70,7 +71,7 @@ export default function MonitorLatencySparkline({ monitorId, kvMonitor }) {
 
   return (
     <div className="mb-1 mt-3">
-      <div className="flex flex-row justify-between items-center text-gray-400 text-xs mb-1">
+      <div className="flex flex-row justify-between items-center text-gruv-l-muted dark:text-gruv-d-muted text-xs mb-1 font-medium">
         <span>
           {config.settings.graphSectionLatency ??
             config.settings.graphLatencyTitle ??
@@ -79,7 +80,7 @@ export default function MonitorLatencySparkline({ monitorId, kvMonitor }) {
         {recent7 != null && (
           <span>
             {config.settings.graphRecentLatencyLabel ?? 'Last 7d avg:'}{' '}
-            <span className="font-semibold text-gray-600 dark:text-gray-300">
+            <span className="font-semibold font-mono tabular-nums text-gruv-accent-aqua dark:text-gruv-accent-aqua">
               {recent7} ms
             </span>
           </span>

@@ -7,6 +7,62 @@ module.exports = {
   presets: [],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
+    extend: {
+      colors: {
+        // Gruvbox (https://github.com/morhetz/gruvbox) — light + dark surfaces + shared accents
+        gruv: {
+          l: {
+            bg: '#fbf1c7',
+            'bg-soft': '#f2e5bc',
+            surface: '#ebdbb2',
+            'surface-2': '#d5c4a1',
+            border: '#bdae93',
+            fg: '#3c3836',
+            muted: '#665c54',
+          },
+          d: {
+            bg: '#282828',
+            'bg-soft': '#1d2021',
+            surface: '#3c3836',
+            'surface-2': '#504945',
+            border: '#665c54',
+            fg: '#ebdbb2',
+            muted: '#a89984',
+          },
+          accent: {
+            red: '#fb4934',
+            green: '#b8bb26',
+            yellow: '#fabd2f',
+            orange: '#fe8019',
+            blue: '#83a598',
+            'blue-dim': '#458588',
+            aqua: '#8ec07c',
+            purple: '#d3869b',
+          },
+        },
+      },
+      fontFamily: {
+        sans: [
+          '"Source Sans 3"',
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'sans-serif',
+        ],
+        mono: [
+          '"JetBrains Mono"',
+          'ui-monospace',
+          'SFMono-Regular',
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          'monospace',
+        ],
+      },
+    },
     screens: {
       sm: '640px',
       md: '768px',

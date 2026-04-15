@@ -51,11 +51,15 @@ export default function ThemeSwitcher() {
     setDark(!darkmode)
   }
 
-  const buttonColor = darkmode ? 'bg-gray-700 focus:ring-gray-700' : 'bg-gray-200 focus:ring-gray-200'
+  const buttonColor = darkmode
+    ? 'bg-gruv-d-surface-2 text-gruv-d-fg hover:bg-gruv-d-border focus:ring-gruv-accent-blue'
+    : 'bg-gruv-l-surface-2 text-gruv-l-fg hover:bg-gruv-l-border focus:ring-gruv-accent-blue-dim'
 
   return (
     <button
-      className={`${buttonColor} rounded-full h-7 w-7 mr-4 focus:outline-none focus:ring-2 focus:ring-opacity-50`}
+      type="button"
+      aria-label={darkmode ? 'Switch to light theme' : 'Switch to dark theme'}
+      className={`${buttonColor} rounded-full h-8 w-8 mr-3 focus:outline-none focus:ring-2 focus:ring-opacity-50 transition-colors shadow-sm`}
       onClick={changeTheme}
     >
       {darkmode ? sunIcon : moonIcon}

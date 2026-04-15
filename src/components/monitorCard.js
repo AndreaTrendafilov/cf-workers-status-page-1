@@ -3,13 +3,14 @@ import MonitorHistogram from './monitorHistogram'
 import MonitorLatencySparkline from './monitorLatencySparkline'
 import MonitorStatsRow from './monitorStatsRow'
 import MonitorStatusLabel from './monitorStatusLabel'
+import MonitorDetailsPanel from './monitorDetailsPanel'
 
 const infoIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"
     fill="currentColor"
-    className="h-5 mr-2 mx-auto text-blue-500 dark:text-blue-400"
+    className="h-5 mr-2 mx-auto text-gruv-accent-blue-dim dark:text-gruv-accent-blue shrink-0"
   >
     <path
       fillRule="evenodd"
@@ -35,13 +36,13 @@ export default function MonitorCard({ monitor, data }) {
           {(monitor.linkable === true || monitor.linkable === undefined) ?
             (
               <a href={monitor.url} target="_blank">
-                <div className="text-xl">{monitor.name}</div>
+                <div className="text-xl font-semibold tracking-tight">{monitor.name}</div>
               </a>
             )
             :
             (
               <span>
-                <div className="text-xl">{monitor.name}</div>
+                <div className="text-xl font-semibold tracking-tight">{monitor.name}</div>
               </span>
             )
           }
@@ -52,17 +53,19 @@ export default function MonitorCard({ monitor, data }) {
 
       <MonitorStatsRow kvMonitor={data} />
 
-      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+      <div className="text-xs font-medium text-gruv-l-muted dark:text-gruv-d-muted mb-1.5">
         {config.settings.graphSectionAvailability ?? 'Availability by day'}
       </div>
       <MonitorHistogram monitorId={monitor.id} kvMonitor={data} />
 
       <MonitorLatencySparkline monitorId={monitor.id} kvMonitor={data} />
 
-      <div className="flex flex-row justify-between items-center text-gray-400 text-sm mt-2">
+      <div className="flex flex-row justify-between items-center text-gruv-l-muted dark:text-gruv-d-muted text-xs font-mono mt-3">
         <div>{config.settings.daysInHistogram} days ago</div>
         <div>Today</div>
       </div>
+
+      <MonitorDetailsPanel kvMonitor={data} />
     </div>
   )
 }

@@ -42,9 +42,15 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
   const slash = useKeyPress('/')
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen selection:bg-gruv-accent-yellow selection:text-gruv-l-fg dark:selection:bg-gruv-accent-yellow dark:selection:text-gruv-d-bg">
       <Head>
         <title>{config.settings.title}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap"
+          rel="stylesheet"
+        />
         <link rel="stylesheet" href="./style.css" />
         <script>
           {`
@@ -67,24 +73,30 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
           `}
         </script>
       </Head>
-      <div className="container mx-auto px-4">
-        <div className="flex flex-row justify-between items-center p-4">
-          <div className="flex flex-row items-center">
-            <img className="h-8 w-auto" src={config.settings.logo} />
-            <h1 className="ml-4 text-3xl">{config.settings.title}</h1>
+      <div className="container max-w-4xl mx-auto px-4 sm:px-6 pb-12">
+        <header className="flex flex-row flex-wrap gap-4 justify-between items-center py-6 sm:py-8 border-b border-gruv-l-border dark:border-gruv-d-border">
+          <div className="flex flex-row items-center gap-4 min-w-0">
+            <img
+              className="h-9 w-auto rounded-lg ring-1 ring-gruv-l-border dark:ring-gruv-d-border"
+              alt=""
+              src={config.settings.logo}
+            />
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gruv-l-fg dark:text-gruv-d-fg">
+              {config.settings.title}
+            </h1>
           </div>
-          <div className="flex flex-row items-center">
+          <div className="flex flex-row items-center shrink-0 gap-1">
             {typeof window !== 'undefined' && <ThemeSwitcher />}
             <MonitorFilter active={slash} callback={filterByTerm} />
           </div>
-        </div>
+        </header>
         <MonitorStatusHeader kvMonitorsLastUpdate={kvMonitorsLastUpdate} />
         {groupMonitorsForDisplay(
           state.visible,
           config.settings.defaultMonitorGroup,
         ).map(({ name, monitors }) => (
           <section key={name} className="mb-6">
-            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2 px-1">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-gruv-l-muted dark:text-gruv-d-muted mb-3 px-1">
               {name}
             </h2>
             {monitors.map((monitor) => (
@@ -96,7 +108,7 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
             ))}
           </section>
         ))}
-        <div className="flex flex-row justify-between mt-4 text-sm">
+        <footer className="flex flex-col sm:flex-row sm:justify-between gap-3 mt-10 pt-6 border-t border-gruv-l-border dark:border-gruv-d-border text-sm text-gruv-l-muted dark:text-gruv-d-muted">
           <div>
             Powered by{' '}
             <a href="https://workers.cloudflare.com/" target="_blank">
@@ -115,7 +127,7 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
               Get Your Status Page
             </a>
           </div>
-        </div>
+        </footer>
       </div>
     </div>
   )

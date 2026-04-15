@@ -91,6 +91,43 @@ export function computeUptimeStats(kvMonitor, daysInHistogram) {
   }
 }
 
+/**
+ * Days in the histogram window (after firstCheck) split into all-good, any failure, or no KV row.
+ */
+export function computeDayBuckets(kvMonitor, daysInHistogram) {
+  const range = buildHistogramDateRange(daysInHistogram)
+  let good = 0
+  let bad = 0
+  let noData = 0
+
+  if (!kvMonitor || !kvMonitor.firstCheck) {
+    return { good, bad, noData, eligible: 0 }
+  }
+
+  for (const day of range) {
+    if (day < kvMonitor.firstCheck) {
+      continue
+    }
+    if (!dayHasChecks(kvMonitor, day)) {
+      noData++
+      continue
+    }
+    const fails = kvMonitor.checks[day].fails
+    if (typeof fails === 'number' && fails > 0) {
+      bad++
+    } else {
+      good++
+    }
+  }
+
+  return {
+    good,
+    bad,
+    noData,
+    eligible: good + bad + noData,
+  }
+}
+
 export function computeLatencySeries(kvMonitor, daysInHistogram) {
   const range = buildHistogramDateRange(daysInHistogram)
   return range.map((day) => ({

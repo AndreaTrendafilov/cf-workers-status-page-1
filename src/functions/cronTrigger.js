@@ -85,6 +85,9 @@ export async function processCronTrigger(event) {
       monitorsState.monitors[monitor.id].lastCheck.operational !==
       monitorOperational
 
+    const prevLc = monitorsState.monitors[monitor.id].lastCheck || {}
+    const checkedAt = Date.now()
+
     // Save monitor's last check response status
     monitorsState.monitors[monitor.id].lastCheck = {
       status: checkResponse.status,
@@ -92,6 +95,9 @@ export async function processCronTrigger(event) {
       operational: monitorOperational,
       degraded,
       responseTimeMs: requestTime,
+      checkedAt,
+      lastSeenUpAt: monitorOperational ? checkedAt : prevLc.lastSeenUpAt,
+      lastSeenDownAt: !monitorOperational ? checkedAt : prevLc.lastSeenDownAt,
     }
 
     // Send Slack message on monitor change

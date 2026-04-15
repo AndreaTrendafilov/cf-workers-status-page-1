@@ -3,9 +3,9 @@ import { locations } from '../functions/locations'
 
 const classes = {
   green:
-    'bg-green-200 text-green-700 dark:bg-green-700 dark:text-green-200 border-green-300 dark:border-green-600',
+    'bg-gruv-accent-aqua bg-opacity-20 dark:bg-opacity-25 text-gruv-l-fg dark:text-gruv-accent-aqua border border-gruv-accent-aqua border-opacity-35 dark:border-opacity-45',
   yellow:
-    'bg-yellow-200 text-yellow-700 dark:bg-yellow-700 dark:text-yellow-200 border-yellow-300 dark:border-yellow-600',
+    'bg-gruv-accent-yellow bg-opacity-20 dark:bg-opacity-20 text-gruv-l-fg dark:text-gruv-accent-yellow border border-gruv-accent-yellow border-opacity-40 dark:border-opacity-45',
 }
 
 export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
@@ -20,11 +20,11 @@ export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
   }
 
   return (
-    <div className={`card mb-4 font-semibold ${classes[color]}`}>
+    <div className={`card mb-6 font-semibold ${classes[color]}`}>
       <div className="flex flex-row justify-between items-center">
         <div>{text}</div>
         {kvMonitorsLastUpdate.time && typeof window !== 'undefined' && (
-          <div className="text-xs font-light">
+          <div className="text-xs font-normal text-gruv-l-muted dark:text-gruv-d-muted font-mono">
             checked{' '}
             {Math.round((Date.now() - kvMonitorsLastUpdate.time) / 1000)} sec
             ago (from{' '}

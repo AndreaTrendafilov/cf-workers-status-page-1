@@ -29,6 +29,19 @@ settings:
   graphRecentLatencyLabel: "Last 7d avg"
   graphLatencyFailHint: "failed check(s) this day"
 
+  # Per-monitor collapsible "Details" (optional labels)
+  monitorDetailsTitle: "Details & history"
+  monitorDetailsPieSection: "Availability split (histogram window)"
+  monitorDetailsLogSection: "Recent checks"
+  pieGoodDaysLabel: "All clear"
+  pieBadDaysLabel: "With incidents"
+  pieNoDataDaysLabel: "No data"
+  pieWindowHint: "Counted after monitoring started for this target"
+  pieStackBarLabel: "Stacked day mix"
+  logLastCheckAtLabel: "Last probe"
+  logLastSeenUpLabel: "Last time up"
+  logLastSeenDownLabel: "Last time down"
+
 monitors:
   # Optional per monitor (Uptime Kuma–like):
   #   group: 'Websites'           # section heading on the status page

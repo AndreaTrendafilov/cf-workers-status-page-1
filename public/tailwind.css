@@ -4,21 +4,36 @@
 
 @layer base {
   body {
-    @apply bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-50;
+    @apply font-sans antialiased bg-gruv-l-bg text-gruv-l-fg dark:bg-gruv-d-bg dark:text-gruv-d-fg;
+    font-feature-settings: 'kern' 1, 'liga' 1;
   }
 
   a {
-    @apply text-blue-500 dark:text-blue-400;
+    @apply text-gruv-accent-blue-dim dark:text-gruv-accent-blue transition-colors duration-150;
+  }
+
+  a:hover {
+    @apply text-gruv-accent-blue dark:text-gruv-accent-aqua;
   }
 }
 
 @layer components {
   .card {
-    @apply p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow rounded-lg p-4 mb-2;
+    @apply p-5 mb-3 rounded-xl border shadow-md;
+    @apply bg-gruv-l-surface border-gruv-l-border dark:bg-gruv-d-surface dark:border-gruv-d-border;
+    box-shadow:
+      0 1px 2px rgba(60, 56, 54, 0.06),
+      0 2px 8px rgba(60, 56, 54, 0.04);
+  }
+
+  .dark .card {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.25),
+      0 2px 12px rgba(0, 0, 0, 0.2);
   }
 
   .pill {
-    @apply px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full;
+    @apply px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full tracking-wide;
   }
 
   .histogram {
@@ -43,7 +58,7 @@
     border-radius: 3.75px;
   }
   .bar {
-    @apply bg-gray-300 dark:bg-gray-600;
+    @apply bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2;
     padding-bottom: 1px;
     height: 100%;
     width: 85%;
@@ -51,15 +66,18 @@
   }
 
   .bar.green {
-    @apply bg-green-400 dark:bg-green-700;
+    @apply bg-gruv-accent-green dark:bg-gruv-accent-green;
+    opacity: 0.85;
   }
 
   .bar.red {
-    @apply bg-red-400 dark:bg-red-700;
+    @apply bg-gruv-accent-red dark:bg-gruv-accent-red;
+    opacity: 0.9;
   }
 
   .bar.yellow {
-    @apply bg-yellow-400 dark:bg-yellow-700;
+    @apply bg-gruv-accent-yellow dark:bg-gruv-accent-yellow;
+    opacity: 0.9;
   }
 
   .tooltip {
@@ -68,11 +86,25 @@
 
   .tooltip .content {
     @apply invisible absolute z-50 inline-block;
-    @apply rounded-lg py-1 px-2 bg-gray-100 dark:bg-gray-800 shadow;
-    @apply opacity-0 transition-all duration-200 scale-50;
+    @apply rounded-lg py-2 px-2.5 shadow-lg border;
+    @apply bg-gruv-l-bg border-gruv-l-border text-gruv-l-fg;
+    @apply dark:bg-gruv-d-bg dark:border-gruv-d-border dark:text-gruv-d-fg;
+    @apply opacity-0 transition-all duration-200 scale-95;
   }
 
   .tooltip:hover .content {
     @apply visible opacity-100 scale-100;
+  }
+
+  details.monitor-details > summary {
+    list-style: none;
+  }
+
+  details.monitor-details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details.monitor-details[open] .monitor-details-chevron {
+    transform: rotate(90deg);
   }
 }

@@ -1,12 +1,14 @@
 import config from '../../config.yaml'
 
 const classes = {
-  gray: 'bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-  green: 'bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-200',
+  gray:
+    'bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 text-gruv-l-muted dark:text-gruv-d-muted',
+  green:
+    'bg-gruv-accent-green bg-opacity-20 dark:bg-opacity-25 text-gruv-l-fg dark:text-gruv-accent-green border border-gruv-accent-green border-opacity-35',
   orange:
-    'bg-orange-200 text-orange-900 dark:bg-orange-800 dark:text-orange-100',
+    'bg-gruv-accent-orange bg-opacity-20 dark:bg-opacity-25 text-gruv-l-fg dark:text-gruv-accent-orange border border-gruv-accent-orange border-opacity-35',
   yellow:
-    'bg-yellow-200 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200',
+    'bg-gruv-accent-yellow bg-opacity-20 dark:bg-opacity-20 text-gruv-l-fg dark:text-gruv-accent-yellow border border-gruv-accent-yellow border-opacity-40',
 }
 
 export default function MonitorStatusLabel({ kvMonitor }) {
