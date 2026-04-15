@@ -2,7 +2,13 @@ const colors = require('tailwindcss/colors')
 
 module.exports = {
   purge: {
-    content: ['./src/**/*.js', './pages/**/*.js', './public/tailwind.css'],
+    // Include .jsx/.astro — React components use Tailwind classes; missing globs strip them in production.
+    content: [
+      './src/**/*.js',
+      './src/**/*.jsx',
+      './src/**/*.astro',
+      './public/tailwind.css',
+    ],
   },
   presets: [],
   darkMode: 'class', // or 'media' or 'class'

@@ -8,7 +8,7 @@
     "predev": "node scripts/emit-config.mjs",
     "dev": "npm run css && astro dev",
     "prebuild": "node scripts/emit-config.mjs",
-    "build": "npm run css && astro build && npx esbuild src/cron/bundle-entry.js --bundle --platform=neutral --target=es2022 --format=esm --outfile=dist/server/cron-bundle.mjs && node scripts/write-cloudflare-worker.mjs",
+    "build": "NODE_ENV=production npm run css && astro build && npx esbuild src/cron/bundle-entry.js --bundle --platform=neutral --target=es2022 --format=esm --outfile=dist/server/cron-bundle.mjs && node scripts/write-cloudflare-worker.mjs",
     "deploy": "npm run build && wrangler deploy --env production",
     "kv-gc": "node ./src/cli/gcMonitors.js",
     "format": "prettier --write '**/*.{js,css,json,md}'",
