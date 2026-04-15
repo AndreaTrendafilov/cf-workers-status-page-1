@@ -8,5 +8,6 @@ export async function GET() {
       return promise
     },
   }
-  return processCronTrigger({}, env, ctx)
+  await processCronTrigger({}, env, ctx)
+  return new Response('OK')
 }

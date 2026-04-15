@@ -72,7 +72,7 @@ jobs:
           echo "KV_NAMESPACE_ID=${KV_NAMESPACE_ID}" >> "$GITHUB_ENV"
           # KV binding for deploy is injected into dist/server/wrangler.json (see inject-kv-binding step).
 
-      # Wrangler deploy uses dist/server/wrangler.json (from Astro); KV and [triggers] from wrangler.toml are not merged — inject script patches both.
+      # Wrangler deploy uses dist/server/wrangler.json (from Astro); main must be cloudflare-worker.mjs (scheduled+cron bundle), and KV / [triggers] must be injected.
       - name: Inject KV + cron triggers into Astro wrangler.json
         run: node scripts/inject-kv-binding.mjs
         env:
