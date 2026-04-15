@@ -14,8 +14,18 @@ jobs:
     timeout-minutes: 15
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      # Wrangler v1 reads CF_API_TOKEN (and expects ~/.wrangler/config/default.toml if env is missing)
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
     steps:
       - uses: actions/checkout@v5
+
+      # Wrangler v1 requires ~/.wrangler/config/default.toml (or CF_API_TOKEN in env — set both).
+      - name: Wrangler v1 API token config file
+        run: |
+          mkdir -p "$HOME/.wrangler/config"
+          printf 'api_token = "%s"\n' "$CF_API_TOKEN" > "$HOME/.wrangler/config/default.toml"
+          test -s "$HOME/.wrangler/config/default.toml"
 
       - uses: actions/setup-node@v5
         with:
@@ -31,9 +41,6 @@ jobs:
       # Flareact + Workers Sites use Wrangler v1. The old cloudflare/wrangler-action@1 Docker image (Node 12) breaks on current APIs and used a fragile `kv:namespace list | head -1` pipe (Rust panic: Broken pipe).
       - name: Ensure KV namespace and production env in wrangler.toml
         id: kv
-        env:
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: |
           set -euo pipefail
           npx --yes @cloudflare/wrangler@1.21.0 kv:namespace create "KV_STATUS_PAGE" 2>/dev/null || true
@@ -86,20 +93,28 @@ jobs:
 
       - name: Publish Worker (Wrangler 1)
         env:
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: npx --yes @cloudflare/wrangler@1.21.0 publish --env production
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.wrangler/config"
+          printf 'api_token = "%s"\n' "$CF_API_TOKEN" > "$HOME/.wrangler/config/default.toml"
+          npx --yes @cloudflare/wrangler@1.21.0 publish --env production
 
       - name: Upload Worker secrets
         env:
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           SECRET_SLACK_WEBHOOK_URL: ${{ secrets.SECRET_SLACK_WEBHOOK_URL }}
           SECRET_TELEGRAM_API_TOKEN: ${{ secrets.SECRET_TELEGRAM_API_TOKEN }}
           SECRET_TELEGRAM_CHAT_ID: ${{ secrets.SECRET_TELEGRAM_CHAT_ID }}
           SECRET_DISCORD_WEBHOOK_URL: ${{ secrets.SECRET_DISCORD_WEBHOOK_URL }}
         run: |
           set -euo pipefail
+          mkdir -p "$HOME/.wrangler/config"
+          printf 'api_token = "%s"\n' "$CF_API_TOKEN" > "$HOME/.wrangler/config/default.toml"
           put() {
             local name="$1"
             local val="${2:-default-gh-action-secret}"
@@ -112,7 +127,5 @@ jobs:
 
       - name: KV garbage-collect script
         env:
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           KV_NAMESPACE_ID: ${{ env.KV_NAMESPACE_ID }}
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: npm run kv-gc
