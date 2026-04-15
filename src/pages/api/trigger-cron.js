@@ -1,7 +1,7 @@
 import { env } from 'cloudflare:workers'
 import { processCronTrigger } from '../../functions/cronTrigger.js'
 
-/** Manual trigger (same behavior as the old Flareact API route). Protect in production. */
+/** Manual cron run for debugging. Protect or remove in production. */
 export async function GET() {
   const event = {
     waitUntil(promise) {
