@@ -22,7 +22,7 @@ const infoIcon = (
 
 export default function MonitorCard({ monitor, data }) {
   return (
-    <div className="card">
+    <div className="card h-full flex flex-col min-h-0">
       <div className="flex flex-row justify-between items-center mb-2">
         <div className="flex flex-row items-center align-center">
           {monitor.description && (

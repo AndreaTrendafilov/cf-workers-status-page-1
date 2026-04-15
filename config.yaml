@@ -31,7 +31,8 @@ settings:
 
   # Per-monitor collapsible "Details" (optional labels)
   monitorDetailsTitle: "Details & history"
-  monitorDetailsPieSection: "Availability split (histogram window)"
+  monitorDetailsPieSection: "Availability & response time (histogram window)"
+  monitorDetailsLatencySection: "Daily avg latency"
   monitorDetailsLogSection: "Recent checks"
   pieGoodDaysLabel: "All clear"
   pieBadDaysLabel: "With incidents"

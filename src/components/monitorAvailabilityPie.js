@@ -1,5 +1,6 @@
 import config from '../../config.yaml'
 import { computeDayBuckets } from '../functions/monitorSeries'
+import MonitorDetailsLatencyMini from './monitorDetailsLatencyMini'
 
 /** Gruvbox bright palette (matches tailwind theme.extend) */
 const COLORS = {
@@ -35,7 +36,13 @@ function donutStyle(buckets) {
 export default function MonitorAvailabilityPie({ kvMonitor }) {
   if (typeof window === 'undefined') {
     return (
-      <div className="h-28 w-28 shrink-0 rounded-full bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 animate-pulse" />
+      <div className="space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-8">
+          <div className="h-28 w-28 shrink-0 rounded-full bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 animate-pulse" />
+          <MonitorDetailsLatencyMini kvMonitor={kvMonitor} />
+        </div>
+        <div className="h-3 max-w-md rounded bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 animate-pulse" />
+      </div>
     )
   }
 
@@ -50,48 +57,51 @@ export default function MonitorAvailabilityPie({ kvMonitor }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-row items-center gap-4 flex-wrap">
-        <div className="relative h-28 w-28 shrink-0">
-          <div
-            className="absolute inset-0 rounded-full shadow-inner"
-            style={style}
-          />
-          <div className="absolute inset-[14%] rounded-full bg-gruv-l-bg dark:bg-gruv-d-bg border border-gruv-l-border dark:border-gruv-d-border" />
-        </div>
-        <ul className="text-xs text-gruv-l-fg dark:text-gruv-d-fg space-y-1 min-w-[10rem]">
-          <li className="flex items-center gap-2">
-            <span
-              className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-              style={{ background: COLORS.good }}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-8">
+        <div className="flex flex-row items-center gap-4 flex-wrap shrink-0">
+          <div className="relative h-28 w-28 shrink-0">
+            <div
+              className="absolute inset-0 rounded-full shadow-inner"
+              style={style}
             />
-            <span>
-              {labelGood}: <strong className="tabular-nums">{buckets.good}</strong>
-            </span>
-          </li>
-          <li className="flex items-center gap-2">
-            <span
-              className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-              style={{ background: COLORS.bad }}
-            />
-            <span>
-              {labelBad}: <strong className="tabular-nums">{buckets.bad}</strong>
-            </span>
-          </li>
-          <li className="flex items-center gap-2">
-            <span
-              className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
-              style={{ background: COLORS.empty }}
-            />
-            <span>
-              {labelNone}: <strong className="tabular-nums">{buckets.noData}</strong>
-            </span>
-          </li>
-          {buckets.eligible > 0 && (
-            <li className="text-gruv-l-muted dark:text-gruv-d-muted pt-1">
-              {s.pieWindowHint ?? 'Days in chart window (after monitoring started)'}
+            <div className="absolute inset-[14%] rounded-full bg-gruv-l-bg dark:bg-gruv-d-bg border border-gruv-l-border dark:border-gruv-d-border" />
+          </div>
+          <ul className="text-xs text-gruv-l-fg dark:text-gruv-d-fg space-y-1 min-w-[10rem]">
+            <li className="flex items-center gap-2">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: COLORS.good }}
+              />
+              <span>
+                {labelGood}: <strong className="tabular-nums">{buckets.good}</strong>
+              </span>
             </li>
-          )}
-        </ul>
+            <li className="flex items-center gap-2">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: COLORS.bad }}
+              />
+              <span>
+                {labelBad}: <strong className="tabular-nums">{buckets.bad}</strong>
+              </span>
+            </li>
+            <li className="flex items-center gap-2">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ background: COLORS.empty }}
+              />
+              <span>
+                {labelNone}: <strong className="tabular-nums">{buckets.noData}</strong>
+              </span>
+            </li>
+            {buckets.eligible > 0 && (
+              <li className="text-gruv-l-muted dark:text-gruv-d-muted pt-1">
+                {s.pieWindowHint ?? 'Days in chart window (after monitoring started)'}
+              </li>
+            )}
+          </ul>
+        </div>
+        <MonitorDetailsLatencyMini kvMonitor={kvMonitor} />
       </div>
 
       {buckets.eligible > 0 && (

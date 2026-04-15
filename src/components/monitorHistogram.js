@@ -54,7 +54,7 @@ export default function MonitorHistogram({ monitorId, kvMonitor }) {
   return (
     <div
       key={`${monitorId}-histogram`}
-      className="flex flex-row items-center histogram"
+      className="flex flex-row items-center histogram w-full min-w-0"
     >
       {content}
     </div>

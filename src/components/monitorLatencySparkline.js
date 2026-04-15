@@ -88,7 +88,7 @@ export default function MonitorLatencySparkline({ monitorId, kvMonitor }) {
       </div>
       <div
         key={`${monitorId}-latency`}
-        className="flex flex-row items-end sparkline h-10 w-full mx-auto gap-px"
+        className="flex flex-row items-end sparkline h-10 w-full min-w-0 mx-auto gap-px"
       >
         {content}
       </div>
