@@ -1,33 +1,33 @@
 settings:
-  title: 'Status Page'
-  url: 'https://status.tikvite.org' # used for Slack messages
+  title: "Status Page"
+  url: "https://status.tikvite.org" # used for Slack messages
   logo: logo-192x192.png # image in ./public/ folder
   daysInHistogram: 92 # number of days you want to display in histogram
   collectResponseTimes: true # collects avg response times from CRON locations
 
-  allmonitorsOperational: 'All Systems Operational'
-  notAllmonitorsOperational: 'Not All Systems Operational'
-  monitorLabelOperational: 'Operational'
-  monitorLabelNotOperational: 'Not Operational'
-  monitorLabelDegraded: 'Degraded' # HTTP OK but slower than maxResponseTimeMs
-  monitorLabelNoData: 'No data'
-  defaultMonitorGroup: 'Services' # monitors without `group` land here
-  graphSlowResponseHint: 'slow vs threshold'
-  dayInHistogramNoData: 'No data'
-  dayInHistogramOperational: 'All good'
-  dayInHistogramNotOperational: ' incident(s)' # xx incident(s) recorded
+  allmonitorsOperational: "All Systems Operational"
+  notAllmonitorsOperational: "Not All Systems Operational"
+  monitorLabelOperational: "Operational"
+  monitorLabelNotOperational: "Not Operational"
+  monitorLabelDegraded: "Degraded" # HTTP OK but slower than maxResponseTimeMs
+  monitorLabelNoData: "No data"
+  defaultMonitorGroup: "Services" # monitors without `group` land here
+  graphSlowResponseHint: "slow vs threshold"
+  dayInHistogramNoData: "No data"
+  dayInHistogramOperational: "All good"
+  dayInHistogramNotOperational: " incident(s)" # xx incident(s) recorded
 
   # Extra chart labels (optional)
-  graphSectionAvailability: 'Availability by day'
-  graphSectionLatency: 'Response time (daily average across PoPs)'
-  graphUptimeLabel: 'Uptime'
-  graphDaysSampledLabel: 'days with data'
-  graphIncidentsLabel: 'Days with failures'
-  graphFailedChecksLabel: 'failed checks total'
-  graphLastCheckLabel: 'Last check'
-  graphLatencyTitle: 'Response time trend'
-  graphRecentLatencyLabel: 'Last 7d avg'
-  graphLatencyFailHint: 'failed check(s) this day'
+  graphSectionAvailability: "Availability by day"
+  graphSectionLatency: "Response time (daily average across PoPs)"
+  graphUptimeLabel: "Uptime"
+  graphDaysSampledLabel: "days with data"
+  graphIncidentsLabel: "Days with failures"
+  graphFailedChecksLabel: "failed checks total"
+  graphLastCheckLabel: "Last check"
+  graphLatencyTitle: "Response time trend"
+  graphRecentLatencyLabel: "Last 7d avg"
+  graphLatencyFailHint: "failed check(s) this day"
 
 monitors:
   # Optional per monitor (Uptime Kuma–like):
@@ -37,8 +37,8 @@ monitors:
   - id: tikvite-org # unique identifier
     name: tikvite.org
     group: Websites
-    description: 'home sweet home' # default=empty
-    url: 'https://tikvite.org' # URL to fetch
+    description: "home sweet home" # default=empty
+    url: "https://tikvite.org" # URL to fetch
     method: GET # default=GET
     expectStatus: 200 # operational status, default=200
     followRedirect: false # should fetch follow redirects, default=false
@@ -47,17 +47,18 @@ monitors:
   - id: chat-tikvite-org
     name: Chat
     group: Websites
-    description: 'If it dies, it dies.'
-    url: 'https://chat.tikvite.org'
+    description: "If it dies, it dies."
+    url: "https://chat.tikvite.org"
     method: GET
     expectStatus: 200
     linkable: true # allows the title to be a link, default=true
 
-  - id: tikvite-duckdns-org
-    name: DDNS
-    group: DNS
-    description: 'just in case'
-    url: 'https://tikvite.duckdns.org'
-    method: GET
-    expectStatus: 200
-    linkable: true # allows the title to be a link, default=true
+  - id: Naphtha.dev
+    name: Naphtha.dev
+    group: Websites
+    description: "just in case"
+    url: "https://naphtha.dev"
+    method: GET # default=GET
+    expectStatus: 200 # operational status, default=200
+    followRedirect: false # should fetch follow redirects, default=false
+    linkable: false # allows the title to be a link, default=true
