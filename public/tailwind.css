@@ -129,22 +129,13 @@
     max-height: 4.5rem;
   }
 
-  .failure-chart-wrap svg text {
-    fill: #665c54;
-    font-size: 6.25px;
-  }
-
-  html.dark .failure-chart-wrap svg text {
-    fill: #a89984;
-  }
-
-  .failure-chart-wrap {
+  .failure-chart-inner {
     @apply w-full overflow-hidden;
-    max-height: 3.5rem;
+    max-height: 3.75rem;
   }
 
-  .failure-chart-wrap svg {
+  .failure-chart-inner svg {
     @apply block w-full h-auto;
-    max-height: 3.5rem;
+    max-height: 3.75rem;
   }
 }
