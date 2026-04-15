@@ -6,9 +6,11 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS=--openssl-legacy-provider flareact dev",
-    "build": "npm run css && NODE_OPTIONS=--openssl-legacy-provider flareact build",
-    "deploy": "npm run build && NODE_OPTIONS=--openssl-legacy-provider flareact publish",
+    "dev": "npm run css && npm run build:worker:dev && NODE_OPTIONS=--openssl-legacy-provider flareact dev",
+    "build:worker:dev": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development WORKER_DEV=true IS_WORKER=true npx webpack --config node_modules/flareact/webpack.js --mode development --output-path dist-worker --output-filename worker-bundle.js",
+    "build": "npm run css && NODE_OPTIONS=--openssl-legacy-provider flareact build && npm run build:worker",
+    "build:worker": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production IS_WORKER=true npx webpack --config node_modules/flareact/webpack.js --mode production --output-path dist-worker --output-filename worker-bundle.js",
+    "deploy": "npm run build && wrangler deploy --env production",
     "kv-gc": "node ./src/cli/gcMonitors.js",
     "format": "prettier --write '**/*.{js,css,json,md}'",
     "css": "postcss public/tailwind.css -o public/style.css"
@@ -24,7 +26,7 @@
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
-    "@cloudflare/wrangler": "1.21.0",
+    "wrangler": "^4.83.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "postcss-cli": "^11.0.0",

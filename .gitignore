@@ -132,4 +132,5 @@ worker/
 .envrc
 .direnv/
 out/
+dist-worker/
 public/style.css
