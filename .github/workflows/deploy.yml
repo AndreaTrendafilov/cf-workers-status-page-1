@@ -85,6 +85,12 @@ jobs:
             echo "]"
           } >> wrangler.toml
 
+      # Wrangler redirects to dist/server/wrangler.json (from Astro); [env.production] KV in wrangler.toml is not merged into that file — inject binding or the Worker ships without KV.
+      - name: Inject KV binding into Astro wrangler.json
+        run: node scripts/inject-kv-binding.mjs
+        env:
+          KV_NAMESPACE_ID: ${{ env.KV_NAMESPACE_ID }}
+
       - name: Deploy Worker (Wrangler 4)
         run: npx wrangler deploy --env production
 
