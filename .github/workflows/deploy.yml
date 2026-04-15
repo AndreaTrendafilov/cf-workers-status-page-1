@@ -43,7 +43,7 @@ jobs:
         id: kv
         run: |
           set -euo pipefail
-          npx --yes @cloudflare/wrangler@1.21.0 kv:namespace create "KV_STATUS_PAGE" 2>/dev/null || true
+          npx wrangler kv:namespace create "KV_STATUS_PAGE" 2>/dev/null || true
 
           KV_NAMESPACE_ID=$(node <<'NODE'
           const https = require('https');
@@ -100,7 +100,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$HOME/.wrangler/config"
           printf 'api_token = "%s"\n' "$CF_API_TOKEN" > "$HOME/.wrangler/config/default.toml"
-          npx --yes @cloudflare/wrangler@1.21.0 publish --env production
+          npx wrangler publish --env production
 
       - name: Upload Worker secrets
         env:
@@ -118,7 +118,7 @@ jobs:
           put() {
             local name="$1"
             local val="${2:-default-gh-action-secret}"
-            printf '%s' "$val" | npx --yes @cloudflare/wrangler@1.21.0 secret put "$name" --env production
+            printf '%s' "$val" | npx wrangler secret put "$name" --env production
           }
           put SECRET_SLACK_WEBHOOK_URL "${SECRET_SLACK_WEBHOOK_URL:-default-gh-action-secret}"
           put SECRET_TELEGRAM_API_TOKEN "${SECRET_TELEGRAM_API_TOKEN:-default-gh-action-secret}"
