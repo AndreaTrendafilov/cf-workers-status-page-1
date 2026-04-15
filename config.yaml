@@ -9,7 +9,10 @@ settings:
   notAllmonitorsOperational: 'Not All Systems Operational'
   monitorLabelOperational: 'Operational'
   monitorLabelNotOperational: 'Not Operational'
+  monitorLabelDegraded: 'Degraded' # HTTP OK but slower than maxResponseTimeMs
   monitorLabelNoData: 'No data'
+  defaultMonitorGroup: 'Services' # monitors without `group` land here
+  graphSlowResponseHint: 'slow vs threshold'
   dayInHistogramNoData: 'No data'
   dayInHistogramOperational: 'All good'
   dayInHistogramNotOperational: ' incident(s)' # xx incident(s) recorded
@@ -27,8 +30,13 @@ settings:
   graphLatencyFailHint: 'failed check(s) this day'
 
 monitors:
+  # Optional per monitor (Uptime Kuma–like):
+  #   group: 'Websites'           # section heading on the status page
+  #   responseContains: '<html'  # body must include this substring (GET/POST body; not used with HEAD)
+  #   maxResponseTimeMs: 3000    # mark Degraded if HTTP OK but slower than this (ms)
   - id: tikvite-org # unique identifier
     name: tikvite.org
+    group: Websites
     description: 'home sweet home' # default=empty
     url: 'https://tikvite.org' # URL to fetch
     method: GET # default=GET
@@ -38,6 +46,7 @@ monitors:
 
   - id: chat-tikvite-org
     name: Chat
+    group: Websites
     description: 'If it dies, it dies.'
     url: 'https://chat.tikvite.org'
     method: GET
@@ -46,6 +55,7 @@ monitors:
 
   - id: tikvite-duckdns-org
     name: DDNS
+    group: DNS
     description: 'just in case'
     url: 'https://tikvite.duckdns.org'
     method: GET

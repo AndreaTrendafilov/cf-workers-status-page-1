@@ -12,7 +12,9 @@ export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
   let color = 'green'
   let text = config.settings.allmonitorsOperational
 
-  if (!kvMonitorsLastUpdate.allOperational) {
+  // Only `allOperational === false` means a monitor failed. `undefined` happens
+  // before the first cron run or empty KV — do not treat that as an outage.
+  if (kvMonitorsLastUpdate.allOperational === false) {
     color = 'yellow'
     text = config.settings.notAllmonitorsOperational
   }

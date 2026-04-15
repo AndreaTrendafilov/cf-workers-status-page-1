@@ -55,9 +55,32 @@ export async function processCronTrigger(event) {
     const checkResponse = await fetch(monitor.url, init)
     const requestTime = Math.round(Date.now() - requestStartTime)
 
-    // Determine whether operational and status changed
-    const monitorOperational =
+    let monitorOperational =
       checkResponse.status === (monitor.expectStatus || 200)
+
+    // Optional: body must contain substring (like Uptime Kuma HTTP(s) Keyword). Skip for HEAD.
+    const keyword = monitor.responseContains
+    if (keyword && monitorOperational) {
+      const method = (monitor.method || 'GET').toUpperCase()
+      if (method !== 'HEAD') {
+        const maxRead = 500_000
+        const body = (await checkResponse.clone().text()).slice(0, maxRead)
+        if (!body.includes(keyword)) {
+          monitorOperational = false
+        }
+      }
+    }
+
+    // Optional: slow but "up" — flag degraded (does not flip global allOperational)
+    let degraded = false
+    if (
+      monitorOperational &&
+      typeof monitor.maxResponseTimeMs === 'number' &&
+      requestTime > monitor.maxResponseTimeMs
+    ) {
+      degraded = true
+    }
+
     const monitorStatusChanged =
       monitorsState.monitors[monitor.id].lastCheck.operational !==
       monitorOperational
@@ -67,6 +90,7 @@ export async function processCronTrigger(event) {
       status: checkResponse.status,
       statusText: checkResponse.statusText,
       operational: monitorOperational,
+      degraded,
       responseTimeMs: requestTime,
     }
 

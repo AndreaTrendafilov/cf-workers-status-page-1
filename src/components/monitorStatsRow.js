@@ -57,6 +57,11 @@ export default function MonitorStatsRow({ kvMonitor }) {
             {typeof last.responseTimeMs === 'number' && (
               <span className="ml-2">{last.responseTimeMs} ms</span>
             )}
+            {last.degraded && (
+              <span className="ml-2 text-orange-600 dark:text-orange-400">
+                ({s.graphSlowResponseHint ?? 'above threshold'})
+              </span>
+            )}
           </>
         ) : (
           <span className="text-gray-400">—</span>
