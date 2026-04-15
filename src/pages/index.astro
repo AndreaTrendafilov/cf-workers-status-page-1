@@ -1,0 +1,52 @@
+---
+import { env } from 'cloudflare:workers'
+import config from '../generated/config.json'
+import { getKVMonitors } from '../functions/kv.js'
+import StatusPage from '../components/StatusPage.jsx'
+
+const kvRaw = await getKVMonitors(env)
+const kvMonitors = kvRaw?.monitors ?? {}
+const kvMonitorsLastUpdate = kvRaw?.lastUpdate ?? {}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{config.settings.title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/style.css" />
+    <script is:inline>
+      function setTheme(theme) {
+        document.documentElement.classList.remove('dark', 'light')
+        document.documentElement.classList.add(theme)
+        localStorage.theme = theme
+      }
+      ;(() => {
+        const query = window.matchMedia('(prefers-color-scheme: dark)')
+        query.addListener(() => {
+          setTheme(query.matches ? 'dark' : 'light')
+        })
+        if (['dark', 'light'].includes(localStorage.theme)) {
+          setTheme(localStorage.theme)
+        } else {
+          setTheme(query.matches ? 'dark' : 'light')
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <StatusPage
+      client:only="react"
+      config={config}
+      kvMonitors={kvMonitors}
+      kvMonitorsLastUpdate={kvMonitorsLastUpdate}
+    />
+  </body>
+</html>

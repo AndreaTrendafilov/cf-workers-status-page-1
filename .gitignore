@@ -134,3 +134,4 @@ worker/
 out/
 dist-worker/
 public/style.css
+src/generated/

@@ -32,7 +32,7 @@ jobs:
         env:
           NODE_ENV: production
 
-      # Flareact uses Workers Sites (static assets in ./out). Wrangler 1’s site uploader fails on current API responses; use Wrangler 4+.
+      # Astro + @astrojs/cloudflare: static assets in dist/client via [assets]; Worker bundle in dist/server.
       - name: Ensure KV namespace and production env in wrangler.toml
         id: kv
         run: |

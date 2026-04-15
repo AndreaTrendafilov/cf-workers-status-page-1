@@ -1,36 +1,30 @@
-import config from '../../config.yaml'
+import config from '../generated/config.json'
 
+import { getCheckLocation } from './checkLocation.js'
+import { getKVMonitors, setKVMonitors } from './kv.js'
 import {
+  notifyDiscord,
   notifySlack,
   notifyTelegram,
-  getCheckLocation,
-  getKVMonitors,
-  setKVMonitors,
-  notifyDiscord,
-} from './helpers'
+} from './notify.js'
 
 function getDate() {
   return new Date().toISOString().split('T')[0]
 }
 
-export async function processCronTrigger(event) {
-  // Get Worker PoP and save it to monitorsStateMetadata
+export async function processCronTrigger(event, env) {
   const checkLocation = await getCheckLocation()
   const checkDay = getDate()
 
-  // Get monitors state from KV
-  let monitorsState = await getKVMonitors()
+  let monitorsState = await getKVMonitors(env)
 
-  // Create empty state objects if not exists in KV storage yet
   if (!monitorsState) {
     monitorsState = { lastUpdate: {}, monitors: {} }
   }
 
-  // Reset default all monitors state to true
   monitorsState.lastUpdate.allOperational = true
 
   for (const monitor of config.monitors) {
-    // Create default monitor state if does not exist yet
     if (typeof monitorsState.monitors[monitor.id] === 'undefined') {
       monitorsState.monitors[monitor.id] = {
         firstCheck: checkDay,
@@ -41,7 +35,6 @@ export async function processCronTrigger(event) {
 
     console.log(`Checking ${monitor.name} ...`)
 
-    // Fetch the monitors URL
     const init = {
       method: monitor.method || 'GET',
       redirect: monitor.followRedirect ? 'follow' : 'manual',
@@ -50,7 +43,6 @@ export async function processCronTrigger(event) {
       },
     }
 
-    // Perform a check and measure time
     const requestStartTime = Date.now()
     const checkResponse = await fetch(monitor.url, init)
     const requestTime = Math.round(Date.now() - requestStartTime)
@@ -58,7 +50,6 @@ export async function processCronTrigger(event) {
     let monitorOperational =
       checkResponse.status === (monitor.expectStatus || 200)
 
-    // Optional: body must contain substring (like Uptime Kuma HTTP(s) Keyword). Skip for HEAD.
     const keyword = monitor.responseContains
     if (keyword && monitorOperational) {
       const method = (monitor.method || 'GET').toUpperCase()
@@ -71,7 +62,6 @@ export async function processCronTrigger(event) {
       }
     }
 
-    // Optional: slow but "up" — flag degraded (does not flip global allOperational)
     let degraded = false
     if (
       monitorOperational &&
@@ -88,7 +78,6 @@ export async function processCronTrigger(event) {
     const prevLc = monitorsState.monitors[monitor.id].lastCheck || {}
     const checkedAt = Date.now()
 
-    // Save monitor's last check response status
     monitorsState.monitors[monitor.id].lastCheck = {
       status: checkResponse.status,
       statusText: checkResponse.statusText,
@@ -100,39 +89,42 @@ export async function processCronTrigger(event) {
       lastSeenDownAt: !monitorOperational ? checkedAt : prevLc.lastSeenDownAt,
     }
 
-    // Send Slack message on monitor change
+    const slackUrl = env.SECRET_SLACK_WEBHOOK_URL
     if (
       monitorStatusChanged &&
-      typeof SECRET_SLACK_WEBHOOK_URL !== 'undefined' &&
-      SECRET_SLACK_WEBHOOK_URL !== 'default-gh-action-secret'
+      typeof slackUrl === 'string' &&
+      slackUrl !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifySlack(monitor, monitorOperational))
+      event.waitUntil(notifySlack(monitor, monitorOperational, env))
     }
 
-    // Send Telegram message on monitor change
+    const tgToken = env.SECRET_TELEGRAM_API_TOKEN
+    const tgChat = env.SECRET_TELEGRAM_CHAT_ID
     if (
       monitorStatusChanged &&
-      typeof SECRET_TELEGRAM_API_TOKEN !== 'undefined' &&
-      SECRET_TELEGRAM_API_TOKEN !== 'default-gh-action-secret' &&
-      typeof SECRET_TELEGRAM_CHAT_ID !== 'undefined' &&
-      SECRET_TELEGRAM_CHAT_ID !== 'default-gh-action-secret'
+      typeof tgToken === 'string' &&
+      tgToken !== 'default-gh-action-secret' &&
+      typeof tgChat === 'string' &&
+      tgChat !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifyTelegram(monitor, monitorOperational))
+      event.waitUntil(notifyTelegram(monitor, monitorOperational, env))
     }
 
-    // Send Discord message on monitor change
+    const discordUrl = env.SECRET_DISCORD_WEBHOOK_URL
     if (
       monitorStatusChanged &&
-      typeof SECRET_DISCORD_WEBHOOK_URL !== 'undefined' &&
-      SECRET_DISCORD_WEBHOOK_URL !== 'default-gh-action-secret'
+      typeof discordUrl === 'string' &&
+      discordUrl !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifyDiscord(monitor, monitorOperational))
+      event.waitUntil(notifyDiscord(monitor, monitorOperational, env))
     }
 
-    // make sure checkDay exists in checks in cases when needed
     if (
       (config.settings.collectResponseTimes || !monitorOperational) &&
-      !monitorsState.monitors[monitor.id].checks.hasOwnProperty(checkDay)
+      !Object.prototype.hasOwnProperty.call(
+        monitorsState.monitors[monitor.id].checks,
+        checkDay,
+      )
     ) {
       monitorsState.monitors[monitor.id].checks[checkDay] = {
         fails: 0,
@@ -141,22 +133,20 @@ export async function processCronTrigger(event) {
     }
 
     if (config.settings.collectResponseTimes && monitorOperational) {
-      // make sure location exists in current checkDay
       if (
-        !monitorsState.monitors[monitor.id].checks[checkDay].res.hasOwnProperty(
+        !Object.prototype.hasOwnProperty.call(
+          monitorsState.monitors[monitor.id].checks[checkDay].res,
           checkLocation,
         )
       ) {
-        monitorsState.monitors[monitor.id].checks[checkDay].res[
-          checkLocation
-        ] = {
-          n: 0,
-          ms: 0,
-          a: 0,
-        }
+        monitorsState.monitors[monitor.id].checks[checkDay].res[checkLocation] =
+          {
+            n: 0,
+            ms: 0,
+            a: 0,
+          }
       }
 
-      // increment number of checks and sum of ms
       const no = ++monitorsState.monitors[monitor.id].checks[checkDay].res[
         checkLocation
       ].n
@@ -164,27 +154,25 @@ export async function processCronTrigger(event) {
         checkLocation
       ].ms += requestTime)
 
-      // save new average ms
       monitorsState.monitors[monitor.id].checks[checkDay].res[
         checkLocation
       ].a = Math.round(ms / no)
     } else if (!monitorOperational) {
-      // Save allOperational to false
       monitorsState.lastUpdate.allOperational = false
 
-      // Increment failed checks on status change or first fail of the day (maybe call it .incidents instead?)
-      if (monitorStatusChanged || monitorsState.monitors[monitor.id].checks[checkDay].fails == 0) {
+      if (
+        monitorStatusChanged ||
+        monitorsState.monitors[monitor.id].checks[checkDay].fails == 0
+      ) {
         monitorsState.monitors[monitor.id].checks[checkDay].fails++
       }
     }
   }
 
-  // Save last update information
   monitorsState.lastUpdate.time = Date.now()
   monitorsState.lastUpdate.loc = checkLocation
 
-  // Save monitorsState to KV storage
-  await setKVMonitors(monitorsState)
+  await setKVMonitors(monitorsState, env)
 
   return new Response('OK')
 }

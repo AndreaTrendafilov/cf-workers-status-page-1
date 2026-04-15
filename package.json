@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "author": "Adam Janiš <adam.janis@gmail.com>",
   "license": "MIT",
-  "main": "index.js",
   "private": true,
   "scripts": {
-    "dev": "npm run css && npm run build:worker:dev && NODE_OPTIONS=--openssl-legacy-provider flareact dev",
-    "build:worker:dev": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development WORKER_DEV=true IS_WORKER=true npx webpack --config node_modules/flareact/webpack.js --mode development --output-path dist-worker --output-filename worker-bundle.js",
-    "build": "npm run css && NODE_OPTIONS=--openssl-legacy-provider flareact build && npm run build:worker",
-    "build:worker": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production IS_WORKER=true npx webpack --config node_modules/flareact/webpack.js --mode production --output-path dist-worker --output-filename worker-bundle.js",
+    "predev": "node scripts/emit-config.mjs",
+    "dev": "npm run css && astro dev",
+    "prebuild": "node scripts/emit-config.mjs",
+    "build": "npm run css && astro build && npx esbuild src/cron/bundle-entry.js --bundle --platform=neutral --target=es2022 --format=esm --outfile=dist/server/cron-bundle.mjs && node scripts/write-cloudflare-worker.mjs",
     "deploy": "npm run build && wrangler deploy --env production",
     "kv-gc": "node ./src/cli/gcMonitors.js",
     "format": "prettier --write '**/*.{js,css,json,md}'",
@@ -19,20 +18,23 @@
     "node": ">=18"
   },
   "dependencies": {
-    "flareact": "^0.10.0",
     "laco": "^1.2.1",
     "laco-react": "^1.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
-    "wrangler": "^4.83.0",
+    "@astrojs/cloudflare": "^13.1.9",
+    "@astrojs/react": "^5.0.3",
+    "astro": "^6.1.6",
     "autoprefixer": "^10.4.20",
+    "esbuild": "^0.25.0",
     "postcss": "^8.4.49",
     "postcss-cli": "^11.0.0",
     "prettier": "^3.4.2",
     "tailwindcss": "^2.2.19",
-    "yaml": "^2.6.1",
-    "yaml-loader": "^0.6.0"
+    "typescript": "^6.0.2",
+    "wrangler": "^4.83.0",
+    "yaml": "^2.6.1"
   }
 }
