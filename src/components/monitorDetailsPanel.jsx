@@ -86,7 +86,7 @@ export default function MonitorDetailsPanel({ kvMonitor }) {
     last &&
     typeof last.operational === 'boolean' &&
     typeof last.status === 'number'
-      ? `${last.operational ? (s.monitorLabelOperational ?? 'Operational') : (s.monitorLabelNotOperational ?? 'Down')} · HTTP ${last.status}${last.statusText ? ` ${last.statusText}` : ''}${typeof last.responseTimeMs === 'number' ? ` · ${last.responseTimeMs} ms` : ''}${last.degraded ? ` · ${s.monitorLabelDegraded ?? 'Degraded'}` : ''}`
+      ? `${last.operational ? (s.monitorLabelOperational ?? 'Operational') : (s.monitorLabelNotOperational ?? 'Down')} · HTTP ${last.status}${last.statusText ? ` ${last.statusText}` : ''}${typeof last.responseTimeMs === 'number' ? ` · ${last.responseTimeMs} ms` : ''}${last.degraded ? ` · ${s.monitorLabelDegraded ?? 'Degraded'}` : ''}${last.probeError ? ` · ${last.probeError}` : ''}${typeof last.attempts === 'number' && last.attempts > 1 ? ` · ${last.attempts} attempts` : ''}`
       : null
 
   return (

@@ -5,6 +5,10 @@ settings:
   daysInHistogram: 92 # number of days you want to display in histogram
   collectResponseTimes: true # collects avg response times from CRON locations
 
+  # Probes: default HTTP timeout (ms), Slack/Telegram/Discord only after N consecutive failed checks (per-monitor override: alertAfterConsecutiveFailures)
+  defaultTimeoutMs: 25000
+  alertAfterConsecutiveFailures: 1
+
   allmonitorsOperational: "All Systems Operational"
   notAllmonitorsOperational: "Not All Systems Operational"
   monitorLabelOperational: "Operational"
@@ -45,9 +49,16 @@ settings:
 
 monitors:
   # Optional per monitor (Uptime Kuma–like):
-  #   group: 'Websites'           # section heading on the status page
-  #   responseContains: '<html'  # body must include this substring (GET/POST body; not used with HEAD)
-  #   maxResponseTimeMs: 3000    # mark Degraded if HTTP OK but slower than this (ms)
+  #   group: 'Websites'
+  #   expectStatus: 200            # or [200, 204] for multiple acceptable codes
+  #   responseContains: '<html'   # body must include (GET/POST; not HEAD)
+  #   responseNotContains: 'error'  # fail if body contains (e.g. maintenance banner)
+  #   headers: { X-Key: "value" }  # extra request headers
+  #   timeoutMs: 15000             # override settings.defaultTimeoutMs
+  #   retries: 2                   # extra attempts after first failure (max 5)
+  #   retryDelayMs: 500            # pause between retries
+  #   alertAfterConsecutiveFailures: 3  # notify only after 3 failed checks in a row
+  #   maxResponseTimeMs: 3000      # Degraded if HTTP OK but slower than this (ms)
   - id: tikvite-org # unique identifier
     name: tikvite.org
     group: Websites

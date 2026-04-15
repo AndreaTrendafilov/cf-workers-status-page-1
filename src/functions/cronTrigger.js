@@ -2,6 +2,7 @@ import config from '../generated/config.json'
 
 import { getCheckLocation } from './checkLocation.js'
 import { getKVMonitors, setKVMonitors } from './kv.js'
+import { probeMonitor } from './monitorProbe.js'
 import {
   notifyDiscord,
   notifySlack,
@@ -22,8 +23,6 @@ export async function processCronTrigger(event, env) {
     monitorsState = { lastUpdate: {}, monitors: {} }
   }
 
-  monitorsState.lastUpdate.allOperational = true
-
   for (const monitor of config.monitors) {
     if (typeof monitorsState.monitors[monitor.id] === 'undefined') {
       monitorsState.monitors[monitor.id] = {
@@ -32,95 +31,88 @@ export async function processCronTrigger(event, env) {
         checks: {},
       }
     }
+  }
 
-    console.log(`Checking ${monitor.name} ...`)
+  const probes = await Promise.all(
+    config.monitors.map((monitor) => {
+      console.log(`Checking ${monitor.name} ...`)
+      return probeMonitor(monitor, config.settings)
+    }),
+  )
 
-    const init = {
-      method: monitor.method || 'GET',
-      redirect: monitor.followRedirect ? 'follow' : 'manual',
-      headers: {
-        'User-Agent': config.settings.user_agent || 'cf-worker-status-page',
-      },
-    }
+  const alertThresholdDefault = Math.max(
+    1,
+    Number(config.settings.alertAfterConsecutiveFailures) || 1,
+  )
 
-    const requestStartTime = Date.now()
-    const checkResponse = await fetch(monitor.url, init)
-    const requestTime = Math.round(Date.now() - requestStartTime)
-
-    let monitorOperational =
-      checkResponse.status === (monitor.expectStatus || 200)
-
-    const keyword = monitor.responseContains
-    if (keyword && monitorOperational) {
-      const method = (monitor.method || 'GET').toUpperCase()
-      if (method !== 'HEAD') {
-        const maxRead = 500_000
-        const body = (await checkResponse.clone().text()).slice(0, maxRead)
-        if (!body.includes(keyword)) {
-          monitorOperational = false
-        }
-      }
-    }
-
-    let degraded = false
-    if (
-      monitorOperational &&
-      typeof monitor.maxResponseTimeMs === 'number' &&
-      requestTime > monitor.maxResponseTimeMs
-    ) {
-      degraded = true
-    }
-
-    const monitorStatusChanged =
-      monitorsState.monitors[monitor.id].lastCheck.operational !==
-      monitorOperational
+  for (let i = 0; i < config.monitors.length; i++) {
+    const monitor = config.monitors[i]
+    const probe = probes[i]
 
     const prevLc = monitorsState.monitors[monitor.id].lastCheck || {}
+    const prevOp = prevLc.operational
+    const prevStreak = prevLc.failureStreak ?? 0
+
+    const failureStreak = probe.operational ? 0 : prevStreak + 1
+    const threshold = Math.max(
+      1,
+      Number(monitor.alertAfterConsecutiveFailures) ||
+        alertThresholdDefault,
+    )
+
     const checkedAt = Date.now()
 
     monitorsState.monitors[monitor.id].lastCheck = {
-      status: checkResponse.status,
-      statusText: checkResponse.statusText,
-      operational: monitorOperational,
-      degraded,
-      responseTimeMs: requestTime,
+      status: probe.status,
+      statusText: probe.statusText,
+      operational: probe.operational,
+      degraded: probe.degraded,
+      responseTimeMs: probe.responseTimeMs,
       checkedAt,
-      lastSeenUpAt: monitorOperational ? checkedAt : prevLc.lastSeenUpAt,
-      lastSeenDownAt: !monitorOperational ? checkedAt : prevLc.lastSeenDownAt,
+      lastSeenUpAt: probe.operational ? checkedAt : prevLc.lastSeenUpAt,
+      lastSeenDownAt: !probe.operational ? checkedAt : prevLc.lastSeenDownAt,
+      failureStreak,
+      probeError: probe.error,
+      attempts: probe.attempts,
     }
+
+    const shouldNotifyDown = !probe.operational && failureStreak === threshold
+    const shouldNotifyUp = probe.operational && prevOp === false
 
     const slackUrl = env.SECRET_SLACK_WEBHOOK_URL
     if (
-      monitorStatusChanged &&
+      (shouldNotifyDown || shouldNotifyUp) &&
       typeof slackUrl === 'string' &&
       slackUrl !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifySlack(monitor, monitorOperational, env))
+      event.waitUntil(notifySlack(monitor, probe.operational, env))
     }
 
     const tgToken = env.SECRET_TELEGRAM_API_TOKEN
     const tgChat = env.SECRET_TELEGRAM_CHAT_ID
     if (
-      monitorStatusChanged &&
+      (shouldNotifyDown || shouldNotifyUp) &&
       typeof tgToken === 'string' &&
       tgToken !== 'default-gh-action-secret' &&
       typeof tgChat === 'string' &&
       tgChat !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifyTelegram(monitor, monitorOperational, env))
+      event.waitUntil(notifyTelegram(monitor, probe.operational, env))
     }
 
     const discordUrl = env.SECRET_DISCORD_WEBHOOK_URL
     if (
-      monitorStatusChanged &&
+      (shouldNotifyDown || shouldNotifyUp) &&
       typeof discordUrl === 'string' &&
       discordUrl !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifyDiscord(monitor, monitorOperational, env))
+      event.waitUntil(notifyDiscord(monitor, probe.operational, env))
     }
 
+    const opChanged = prevOp !== probe.operational
+
     if (
-      (config.settings.collectResponseTimes || !monitorOperational) &&
+      (config.settings.collectResponseTimes || !probe.operational) &&
       !Object.prototype.hasOwnProperty.call(
         monitorsState.monitors[monitor.id].checks,
         checkDay,
@@ -132,7 +124,7 @@ export async function processCronTrigger(event, env) {
       }
     }
 
-    if (config.settings.collectResponseTimes && monitorOperational) {
+    if (config.settings.collectResponseTimes && probe.operational) {
       if (
         !Object.prototype.hasOwnProperty.call(
           monitorsState.monitors[monitor.id].checks[checkDay].res,
@@ -152,22 +144,24 @@ export async function processCronTrigger(event, env) {
       ].n
       const ms = (monitorsState.monitors[monitor.id].checks[checkDay].res[
         checkLocation
-      ].ms += requestTime)
+      ].ms += probe.responseTimeMs)
 
       monitorsState.monitors[monitor.id].checks[checkDay].res[
         checkLocation
       ].a = Math.round(ms / no)
-    } else if (!monitorOperational) {
-      monitorsState.lastUpdate.allOperational = false
-
+    } else if (!probe.operational) {
       if (
-        monitorStatusChanged ||
-        monitorsState.monitors[monitor.id].checks[checkDay].fails == 0
+        opChanged ||
+        monitorsState.monitors[monitor.id].checks[checkDay].fails === 0
       ) {
         monitorsState.monitors[monitor.id].checks[checkDay].fails++
       }
     }
   }
+
+  monitorsState.lastUpdate.allOperational = config.monitors.every(
+    (m) => monitorsState.monitors[m.id]?.lastCheck?.operational === true,
+  )
 
   monitorsState.lastUpdate.time = Date.now()
   monitorsState.lastUpdate.loc = checkLocation

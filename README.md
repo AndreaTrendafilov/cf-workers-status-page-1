@@ -21,6 +21,16 @@ For **GitHub Actions** deploys, you also need:
 1. Edit **[`config.yaml`](./config.yaml)** — monitors, copy, `settings.url` (must match your public status URL, e.g. `https://status.tikvite.org`), logo path under `public/`, histogram window, etc.
 2. On each **`npm run dev`** / **`npm run build`**, **`scripts/emit-config.mjs`** writes **`src/generated/config.json`** (gitignored). Do not edit that JSON by hand.
 
+### Monitoring behavior (this fork)
+
+- **Timeouts** — every probe uses **`AbortSignal`** with **`settings.defaultTimeoutMs`** (override per monitor with **`timeoutMs`**).
+- **Retries** — optional **`retries`** / **`retryDelayMs`** on transient failures (wrong status, body rules, timeouts, network errors).
+- **Status codes** — **`expectStatus`** can be a single code or a list (e.g. **`[200, 204]`**).
+- **Body rules** — **`responseContains`** / **`responseNotContains`** (GET/POST only).
+- **Custom headers** — **`headers`** map merged with the default `User-Agent`.
+- **Alert noise** — **`settings.alertAfterConsecutiveFailures`** (and per-monitor **`alertAfterConsecutiveFailures`**) so Slack/Telegram/Discord fire only after *N* failed checks in a row; recovery still notifies as soon as a check succeeds.
+- **Parallel probes** — all monitors are checked in parallel each cron run (watch [Worker subrequest limits](https://developers.cloudflare.com/workers/platform/limits/) if you add many monitors or retries).
+
 ## Deploy with GitHub Actions
 
 1. Fork or clone this repo and push to GitHub.
