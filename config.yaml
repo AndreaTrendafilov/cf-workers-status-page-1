@@ -50,7 +50,6 @@ settings:
   dashboardSectionTitle: "Fleet overview"
   dashboardStatusMixLabel: "Current monitor mix (filtered)"
   dashboardFleetFailsTitle: "Failed checks per day (fleet total)"
-  dashboardFleetFailsTotalHint: "failed checks in window"
   dashboardFleetLatencyTitle: "Mean response time (monitors with data that day)"
   graphSectionFailures: "Failed checks per day (this monitor)"
   graphFailureDayHint: "failed check(s)"

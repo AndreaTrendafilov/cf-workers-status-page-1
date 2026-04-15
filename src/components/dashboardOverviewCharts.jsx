@@ -58,29 +58,18 @@ function FleetFailsBars({ series }) {
           </g>
         )
       })}
-      <text
-        x={PAD_L}
-        y={H - 4}
-        className="font-mono tabular-nums"
-      >
-        {series[0]?.day ?? ''}
-      </text>
-      <text
-        x={W / 2}
-        y={H - 4}
-        textAnchor="middle"
-        className="font-mono tabular-nums"
-      >
-        {n >= 3 ? series[Math.floor(n / 2)]?.day : ''}
-      </text>
-      <text
-        x={W - PAD_R}
-        y={H - 4}
-        textAnchor="end"
-        className="font-mono tabular-nums"
-      >
-        {series[n - 1]?.day ?? ''}
-      </text>
+      {n > 0 && series[0]?.day && series[n - 1]?.day && (
+        <text
+          x={W / 2}
+          y={H - 3}
+          textAnchor="middle"
+          className="font-mono tabular-nums"
+        >
+          {series[0].day === series[n - 1].day
+            ? series[0].day
+            : `${series[0].day} → ${series[n - 1].day}`}
+        </text>
+      )}
     </svg>
   )
 }
@@ -118,7 +107,6 @@ function FleetLatencyLine({ series }) {
   if (cur.length) segments.push(cur)
 
   const gridYs = [0, 0.5, 1].map((t) => PAD_T + t * INNER_H)
-  const tickVals = [0, 0.5, 1].map((t) => Math.round(yMax - t * (yMax - yMin)))
 
   return (
     <svg
@@ -144,17 +132,6 @@ function FleetLatencyLine({ series }) {
           strokeOpacity="0.32"
           strokeWidth="1"
         />
-      ))}
-      {tickVals.map((tv, ti) => (
-        <text
-          key={`tk-${ti}`}
-          x={PAD_L - 4}
-          y={gridYs[ti] + 3}
-          textAnchor="end"
-          className="font-mono tabular-nums"
-        >
-          {tv}
-        </text>
       ))}
       {segments.map((seg) => {
         if (seg.length === 0) return null
@@ -189,29 +166,18 @@ function FleetLatencyLine({ series }) {
           </g>
         )
       })}
-      <text
-        x={PAD_L}
-        y={H - 4}
-        className="font-mono tabular-nums"
-      >
-        {series[0]?.day ?? ''}
-      </text>
-      <text
-        x={W / 2}
-        y={H - 4}
-        textAnchor="middle"
-        className="font-mono tabular-nums"
-      >
-        {n >= 3 ? series[Math.floor(n / 2)]?.day : ''}
-      </text>
-      <text
-        x={W - PAD_R}
-        y={H - 4}
-        textAnchor="end"
-        className="font-mono tabular-nums"
-      >
-        {series[n - 1]?.day ?? ''}
-      </text>
+      {n > 0 && series[0]?.day && series[n - 1]?.day && (
+        <text
+          x={W / 2}
+          y={H - 3}
+          textAnchor="middle"
+          className="font-mono tabular-nums"
+        >
+          {series[0].day === series[n - 1].day
+            ? series[0].day
+            : `${series[0].day} → ${series[n - 1].day}`}
+        </text>
+      )}
     </svg>
   )
 }
@@ -313,14 +279,8 @@ export default function DashboardOverviewCharts({ monitors, kvMonitors }) {
           className={`grid grid-cols-1 gap-4 ${collect ? 'lg:grid-cols-2' : ''}`}
         >
           <div className="min-w-0">
-            <div className="flex flex-row justify-between items-baseline gap-2 mb-1 text-[10px] font-medium text-gruv-l-muted dark:text-gruv-d-muted leading-snug">
-              <span className="min-w-0">
-                {s.dashboardFleetFailsTitle ?? 'Failed checks per day (fleet)'}
-              </span>
-              <span className="shrink-0 font-mono tabular-nums text-[9px] opacity-90 text-gruv-l-fg dark:text-gruv-d-fg">
-                Σ {failSeries.reduce((a, p) => a + p.totalFails, 0)}{' '}
-                {s.dashboardFleetFailsTotalHint ?? 'in window'}
-              </span>
+            <div className="mb-1 text-[10px] font-medium text-gruv-l-muted dark:text-gruv-d-muted leading-snug">
+              {s.dashboardFleetFailsTitle ?? 'Failed checks per day (fleet)'}
             </div>
             <div className="fleet-chart-wrap rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg dark:bg-gruv-d-bg-soft">
               <FleetFailsBars series={failSeries} />

@@ -97,16 +97,18 @@ export default function MonitorDetailsLatencyMini({ kvMonitor }) {
               {title}
             </h4>
             {recent7 != null && (
-              <div className="flex flex-col items-end gap-0.5 rounded-lg border border-gruv-accent-aqua/35 dark:border-gruv-accent-aqua/25 bg-gruv-accent-aqua/10 dark:bg-gruv-accent-aqua/5 px-2.5 py-1.5 shrink-0 max-w-full">
-                <span className="text-[10px] font-medium uppercase tracking-wide text-gruv-l-muted dark:text-gruv-d-muted whitespace-nowrap">
+              <div className="flex flex-col items-end gap-1 rounded-lg border border-gruv-accent-aqua/35 dark:border-gruv-accent-aqua/25 bg-gruv-accent-aqua/10 dark:bg-gruv-accent-aqua/5 px-2.5 py-2 shrink-0 max-w-full text-right">
+                <span className="block text-[10px] font-medium uppercase tracking-wide text-gruv-l-muted dark:text-gruv-d-muted leading-tight">
                   {s.graphRecentLatencyLabel ?? 'Last 7d avg'}
                 </span>
-                <span className="font-mono text-lg sm:text-xl font-semibold leading-tight tabular-nums text-gruv-accent-blue dark:text-gruv-accent-aqua whitespace-nowrap">
-                  {recent7}
-                  <span className="ml-1 text-xs font-medium text-gruv-l-muted dark:text-gruv-d-muted">
+                <div className="flex flex-row items-baseline justify-end gap-1.5">
+                  <span className="font-mono text-lg sm:text-xl font-semibold tabular-nums leading-none text-gruv-accent-blue dark:text-gruv-accent-aqua">
+                    {recent7}
+                  </span>
+                  <span className="text-xs font-medium text-gruv-l-muted dark:text-gruv-d-muted">
                     ms
                   </span>
-                </span>
+                </div>
               </div>
             )}
           </div>
@@ -133,10 +135,10 @@ export default function MonitorDetailsLatencyMini({ kvMonitor }) {
             {s.monitorDetailsLatencyEmpty ?? 'No latency samples in this window yet.'}
           </p>
         ) : (
-          <div className="mt-4">
-            <div className="relative overflow-hidden rounded-lg border border-gruv-l-border/90 dark:border-gruv-d-border bg-gruv-l-bg-soft dark:bg-gruv-d-bg-soft">
+          <div className="mt-4 space-y-1.5">
+            <div className="relative min-h-[7rem] rounded-lg border border-gruv-l-border/90 dark:border-gruv-d-border bg-gruv-l-bg-soft dark:bg-gruv-d-bg-soft overflow-x-auto">
               <div
-                className="pointer-events-none absolute inset-x-0 top-2 bottom-9 flex flex-col justify-between z-0"
+                className="pointer-events-none absolute inset-x-0 top-2 bottom-2 flex flex-col justify-between z-0"
                 aria-hidden
               >
                 <div className="h-px bg-gruv-l-border/70 dark:bg-gruv-d-border/60" />
@@ -144,13 +146,13 @@ export default function MonitorDetailsLatencyMini({ kvMonitor }) {
                 <div className="h-px bg-gruv-l-border/50 dark:bg-gruv-d-border/45" />
                 <div className="h-px bg-gruv-l-border/70 dark:bg-gruv-d-border/60" />
               </div>
-              <div className="relative z-[1] flex flex-row items-end min-h-[7rem] h-28 w-full px-1 pt-2 pb-8 gap-px overflow-x-auto overflow-y-hidden">
+              <div className="relative z-[1] flex flex-row items-end min-h-[7rem] h-28 w-full min-w-0 px-1 pt-2 pb-2 gap-px">
                 {content}
               </div>
-              <div className="absolute bottom-1.5 left-0 right-0 z-[2] flex justify-between px-2 text-[10px] font-medium uppercase tracking-wide text-gruv-l-muted dark:text-gruv-d-muted">
-                <span>{s.monitorDetailsLatencyAxisOld ?? 'Older'}</span>
-                <span>{s.monitorDetailsLatencyAxisNew ?? 'Recent'}</span>
-              </div>
+            </div>
+            <div className="flex flex-row justify-between gap-6 px-1 text-[10px] font-medium uppercase tracking-wide text-gruv-l-muted dark:text-gruv-d-muted">
+              <span className="shrink-0">{s.monitorDetailsLatencyAxisOld ?? 'Older'}</span>
+              <span className="shrink-0 text-right">{s.monitorDetailsLatencyAxisNew ?? 'Recent'}</span>
             </div>
           </div>
         )}

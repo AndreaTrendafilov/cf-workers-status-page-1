@@ -87,12 +87,19 @@ export default function MonitorLatencySparkline({ monitorId, kvMonitor }) {
             'Response time'}
         </span>
         {recent7 != null && (
-          <span>
-            {config.settings.graphRecentLatencyLabel ?? 'Last 7d avg:'}{' '}
-            <span className="font-semibold font-mono tabular-nums text-gruv-accent-aqua dark:text-gruv-accent-aqua">
-              {recent7} ms
+          <div className="flex flex-col items-end gap-0.5 shrink-0 text-right">
+            <span className="text-[10px] font-medium uppercase tracking-wide text-gruv-l-muted dark:text-gruv-d-muted leading-tight">
+              {config.settings.graphRecentLatencyLabel ?? 'Last 7d avg'}
             </span>
-          </span>
+            <div className="flex flex-row items-baseline justify-end gap-1.5">
+              <span className="font-semibold font-mono text-base tabular-nums leading-none text-gruv-accent-aqua dark:text-gruv-accent-aqua">
+                {recent7}
+              </span>
+              <span className="text-xs font-medium text-gruv-l-muted dark:text-gruv-d-muted">
+                ms
+              </span>
+            </div>
+          </div>
         )}
       </div>
       <div
@@ -138,20 +145,11 @@ export default function MonitorLatencySparkline({ monitorId, kvMonitor }) {
               x={PAD_L - 6}
               y={gridYs[ti] + 4}
               textAnchor="end"
-              className="fill-current text-[9px] font-mono tabular-nums opacity-70"
+              className="fill-current text-[8px] font-mono tabular-nums opacity-75"
             >
               {tv}
             </text>
           ))}
-
-          <text
-            x={PAD_L - 6}
-            y={PAD_T + 4}
-            textAnchor="end"
-            className="fill-current text-[8px] opacity-50 font-sans"
-          >
-            ms
-          </text>
 
           {areaPaths.map(({ d, key }) => (
             <path
@@ -216,31 +214,18 @@ export default function MonitorLatencySparkline({ monitorId, kvMonitor }) {
             )
           })}
 
-          <text
-            x={PAD_L}
-            y={H - 6}
-            className="fill-current text-[9px] opacity-80 font-mono"
-          >
-            {series[0]?.day ?? ''}
-          </text>
-          <text
-            x={W / 2}
-            y={H - 6}
-            textAnchor="middle"
-            className="fill-current text-[9px] opacity-80 font-mono"
-          >
-            {n >= 3 && series[Math.floor(n / 2)]?.day
-              ? series[Math.floor(n / 2)].day
-              : ''}
-          </text>
-          <text
-            x={W - PAD_R}
-            y={H - 6}
-            textAnchor="end"
-            className="fill-current text-[9px] opacity-80 font-mono"
-          >
-            {series[n - 1]?.day ?? ''}
-          </text>
+          {n > 0 && series[0]?.day && series[n - 1]?.day && (
+            <text
+              x={W / 2}
+              y={H - 5}
+              textAnchor="middle"
+              className="fill-current text-[8px] opacity-85 font-mono tabular-nums"
+            >
+              {series[0].day === series[n - 1].day
+                ? series[0].day
+                : `${series[0].day} → ${series[n - 1].day}`}
+            </text>
+          )}
         </svg>
       </div>
     </div>

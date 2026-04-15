@@ -35,12 +35,12 @@ export default function MonitorFailureBars({ monitorId, kvMonitor }) {
 
   return (
     <div className="mb-1 mt-2">
-      <div className="flex flex-row justify-between items-center text-gruv-l-muted dark:text-gruv-d-muted text-[10px] mb-1 font-medium leading-snug gap-2">
-        <span>
+      <div className="flex flex-row justify-between items-baseline gap-3 text-gruv-l-muted dark:text-gruv-d-muted text-xs mb-1.5 font-medium leading-snug">
+        <span className="min-w-0 text-gruv-l-fg dark:text-gruv-d-fg">
           {config.settings.graphSectionFailures ?? 'Failed checks per day'}
         </span>
         {anyFails && (
-          <span className="font-mono tabular-nums text-[9px] text-gruv-accent-yellow">
+          <span className="shrink-0 font-mono tabular-nums text-[10px] text-gruv-accent-yellow">
             peak {Math.max(...series.map((p) => p.fails))}/day
           </span>
         )}
@@ -86,21 +86,18 @@ export default function MonitorFailureBars({ monitorId, kvMonitor }) {
               </g>
             )
           })}
-          <text
-            x={PAD_L}
-            y={H - 3}
-            className="font-mono tabular-nums"
-          >
-            {series[0]?.day ?? ''}
-          </text>
-          <text
-            x={W - PAD_R}
-            y={H - 3}
-            textAnchor="end"
-            className="font-mono tabular-nums"
-          >
-            {series[n - 1]?.day ?? ''}
-          </text>
+          {n > 0 && series[0]?.day && series[n - 1]?.day && (
+            <text
+              x={W / 2}
+              y={H - 3}
+              textAnchor="middle"
+              className="font-mono tabular-nums"
+            >
+              {series[0].day === series[n - 1].day
+                ? series[0].day
+                : `${series[0].day} → ${series[n - 1].day}`}
+            </text>
+          )}
         </svg>
       </div>
     </div>
