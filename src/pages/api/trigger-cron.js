@@ -3,10 +3,10 @@ import { processCronTrigger } from '../../functions/cronTrigger.js'
 
 /** Manual cron run for debugging. Protect or remove in production. */
 export async function GET() {
-  const event = {
+  const ctx = {
     waitUntil(promise) {
       return promise
     },
   }
-  return processCronTrigger(event, env)
+  return processCronTrigger({}, env, ctx)
 }

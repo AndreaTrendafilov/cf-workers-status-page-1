@@ -14,7 +14,7 @@ export default {
     return astro.fetch(request, env, ctx);
   },
   async scheduled(event, env, ctx) {
-    return processCronTrigger(event, env);
+    return processCronTrigger(event, env, ctx);
   },
 };
 `,

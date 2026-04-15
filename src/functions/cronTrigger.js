@@ -13,7 +13,7 @@ function getDate() {
   return new Date().toISOString().split('T')[0]
 }
 
-export async function processCronTrigger(event, env) {
+export async function processCronTrigger(_controller, env, ctx) {
   const checkLocation = await getCheckLocation()
   const checkDay = getDate()
 
@@ -85,7 +85,7 @@ export async function processCronTrigger(event, env) {
       typeof slackUrl === 'string' &&
       slackUrl !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifySlack(monitor, probe.operational, env))
+      ctx.waitUntil(notifySlack(monitor, probe.operational, env))
     }
 
     const tgToken = env.SECRET_TELEGRAM_API_TOKEN
@@ -97,7 +97,7 @@ export async function processCronTrigger(event, env) {
       typeof tgChat === 'string' &&
       tgChat !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifyTelegram(monitor, probe.operational, env))
+      ctx.waitUntil(notifyTelegram(monitor, probe.operational, env))
     }
 
     const discordUrl = env.SECRET_DISCORD_WEBHOOK_URL
@@ -106,7 +106,7 @@ export async function processCronTrigger(event, env) {
       typeof discordUrl === 'string' &&
       discordUrl !== 'default-gh-action-secret'
     ) {
-      event.waitUntil(notifyDiscord(monitor, probe.operational, env))
+      ctx.waitUntil(notifyDiscord(monitor, probe.operational, env))
     }
 
     const opChanged = prevOp !== probe.operational
