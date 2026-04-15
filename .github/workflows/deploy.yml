@@ -33,7 +33,7 @@ jobs:
           NODE_ENV: production
 
       # Astro + @astrojs/cloudflare: static assets in dist/client via [assets]; Worker bundle in dist/server.
-      - name: Ensure KV namespace and production env in wrangler.toml
+      - name: Ensure KV namespace (id for inject step)
         id: kv
         run: |
           set -euo pipefail
@@ -70,20 +70,7 @@ jobs:
           NODE
           )
           echo "KV_NAMESPACE_ID=${KV_NAMESPACE_ID}" >> "$GITHUB_ENV"
-
-          # Do not match commented examples in wrangler.toml
-          if grep -v '^[[:space:]]*#' wrangler.toml | grep -qF 'KV_STATUS_PAGE'; then
-            echo "wrangler.toml already configures KV_STATUS_PAGE; skipping append."
-            exit 0
-          fi
-
-          {
-            echo ""
-            echo "[env.production]"
-            echo "kv_namespaces = ["
-            echo "  { binding = \"KV_STATUS_PAGE\", id = \"${KV_NAMESPACE_ID}\", preview_id = \"${KV_NAMESPACE_ID}\" },"
-            echo "]"
-          } >> wrangler.toml
+          # KV binding for deploy is injected into dist/server/wrangler.json (see inject-kv-binding step).
 
       # Wrangler redirects to dist/server/wrangler.json (from Astro); [env.production] KV in wrangler.toml is not merged into that file — inject binding or the Worker ships without KV.
       - name: Inject KV binding into Astro wrangler.json

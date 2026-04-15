@@ -11,3 +11,9 @@ directory = "./dist/client"
 
 [triggers]
 crons = ["* * * * *"]
+
+# Without this, `wrangler deploy --env production` deploys to a *second* Worker
+# (name suffixed with `-production`), so *.workers.dev for that host stays stale
+# while `cf-workers-status-page.<subdomain>.workers.dev` may point at a different deploy.
+[env.production]
+name = "cf-workers-status-page"
