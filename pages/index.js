@@ -12,7 +12,6 @@ import ThemeSwitcher from '../src/components/themeSwitcher'
 const MonitorStore = new Store({
   monitors: config.monitors,
   visible: config.monitors,
-  activeFilter: false,
 })
 
 const filterByTerm = (term) =>
@@ -79,15 +78,13 @@ export default function Index({ config, kvMonitors, kvMonitorsLastUpdate }) {
           </div>
         </div>
         <MonitorStatusHeader kvMonitorsLastUpdate={kvMonitorsLastUpdate} />
-        {state.visible.map((monitor, key) => {
-          return (
-            <MonitorCard
-              key={key}
-              monitor={monitor}
-              data={kvMonitors[monitor.id]}
-            />
-          )
-        })}
+        {state.visible.map((monitor) => (
+          <MonitorCard
+            key={monitor.id}
+            monitor={monitor}
+            data={kvMonitors[monitor.id]}
+          />
+        ))}
         <div className="flex flex-row justify-between mt-4 text-sm">
           <div>
             Powered by{' '}

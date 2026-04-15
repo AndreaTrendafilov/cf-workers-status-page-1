@@ -14,6 +14,18 @@ settings:
   dayInHistogramOperational: 'All good'
   dayInHistogramNotOperational: ' incident(s)' # xx incident(s) recorded
 
+  # Extra chart labels (optional)
+  graphSectionAvailability: 'Availability by day'
+  graphSectionLatency: 'Response time (daily average across PoPs)'
+  graphUptimeLabel: 'Uptime'
+  graphDaysSampledLabel: 'days with data'
+  graphIncidentsLabel: 'Days with failures'
+  graphFailedChecksLabel: 'failed checks total'
+  graphLastCheckLabel: 'Last check'
+  graphLatencyTitle: 'Response time trend'
+  graphRecentLatencyLabel: 'Last 7d avg'
+  graphLatencyFailHint: 'failed check(s) this day'
+
 monitors:
   - id: tikvite-org # unique identifier
     name: tikvite.org

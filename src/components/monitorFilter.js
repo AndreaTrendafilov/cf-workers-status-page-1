@@ -30,7 +30,7 @@ export default function MonitorFilter({ active, callback }) {
 
   const handleKeyDown = (event) => {
     // blur input field on escape
-    if (event.keyCode === 27) {
+    if (event.key === 'Escape') {
       event.target.blur()
     }
   }

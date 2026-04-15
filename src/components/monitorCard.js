@@ -1,6 +1,8 @@
 import config from '../../config.yaml'
-import MonitorStatusLabel from './monitorStatusLabel'
 import MonitorHistogram from './monitorHistogram'
+import MonitorLatencySparkline from './monitorLatencySparkline'
+import MonitorStatsRow from './monitorStatsRow'
+import MonitorStatusLabel from './monitorStatusLabel'
 
 const infoIcon = (
   <svg
@@ -17,9 +19,9 @@ const infoIcon = (
   </svg>
 )
 
-export default function MonitorCard({ key, monitor, data }) {
+export default function MonitorCard({ monitor, data }) {
   return (
-    <div key={key} className="card">
+    <div className="card">
       <div className="flex flex-row justify-between items-center mb-2">
         <div className="flex flex-row items-center align-center">
           {monitor.description && (
@@ -48,9 +50,16 @@ export default function MonitorCard({ key, monitor, data }) {
         <MonitorStatusLabel kvMonitor={data} />
       </div>
 
+      <MonitorStatsRow kvMonitor={data} />
+
+      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+        {config.settings.graphSectionAvailability ?? 'Availability by day'}
+      </div>
       <MonitorHistogram monitorId={monitor.id} kvMonitor={data} />
 
-      <div className="flex flex-row justify-between items-center text-gray-400 text-sm">
+      <MonitorLatencySparkline monitorId={monitor.id} kvMonitor={data} />
+
+      <div className="flex flex-row justify-between items-center text-gray-400 text-sm mt-2">
         <div>{config.settings.daysInHistogram} days ago</div>
         <div>Today</div>
       </div>

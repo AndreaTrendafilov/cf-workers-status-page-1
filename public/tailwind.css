@@ -24,6 +24,16 @@
   .histogram {
     @apply h-6 w-full mx-auto;
   }
+
+  .sparkline {
+    @apply w-full mx-auto;
+  }
+
+  .lat-bar-inner {
+    width: 85%;
+    min-height: 4px;
+    @apply mx-auto rounded-t-sm transition-colors;
+  }
   .hitbox {
     align-items: flex-end;
     box-sizing: border-box;

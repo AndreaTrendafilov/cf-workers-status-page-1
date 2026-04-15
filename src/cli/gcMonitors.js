@@ -1,6 +1,5 @@
-const yaml = require('yaml-loader')
-const fetch = require('node-fetch')
 const fs = require('fs')
+const { parse: parseYaml } = require('yaml')
 
 const accountId = process.env.CF_ACCOUNT_ID
 const namespaceId = process.env.KV_NAMESPACE_ID
@@ -51,8 +50,7 @@ async function saveKVMonitors(kvMonitorsKey, data) {
 
 function loadConfig() {
   const configFile = fs.readFileSync('./config.yaml', 'utf8')
-  const config = yaml(configFile)
-  return JSON.parse(config)
+  return parseYaml(configFile)
 }
 
 getKvMonitors(kvMonitorsKey)
@@ -64,23 +62,24 @@ getKvMonitors(kvMonitorsKey)
       return key.id
     })
 
-    Object.keys(stateMonitors.monitors).map((monitor) => {
+    Object.keys(stateMonitors.monitors).forEach((monitor) => {
       // remove monitor data from state if missing in config
       if (!configMonitors.includes(monitor)) {
         delete stateMonitors.monitors[monitor]
+        return
       }
 
-      // delete dates older than config.settings.daysInHistogram
-      let date = new Date()
+      const date = new Date()
       date.setDate(date.getDate() - config.settings.daysInHistogram)
-      date.toISOString().split('T')[0]
       const cleanUpDate = date.toISOString().split('T')[0]
 
-      Object.keys(stateMonitors.monitors[monitor].checks).map((checkDay) => {
-        if (checkDay < cleanUpDate) {
-          delete stateMonitors.monitors[monitor].checks[checkDay]
-        }
-      })
+      Object.keys(stateMonitors.monitors[monitor].checks).forEach(
+        (checkDay) => {
+          if (checkDay < cleanUpDate) {
+            delete stateMonitors.monitors[monitor].checks[checkDay]
+          }
+        },
+      )
     })
 
     // sanity check + if good save the KV

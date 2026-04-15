@@ -67,6 +67,7 @@ export async function processCronTrigger(event) {
       status: checkResponse.status,
       statusText: checkResponse.statusText,
       operational: monitorOperational,
+      responseTimeMs: requestTime,
     }
 
     // Send Slack message on monitor change
