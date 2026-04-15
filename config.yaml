@@ -45,6 +45,15 @@ settings:
   summaryMonitorsNoData: "awaiting first check"
   summaryGlobalProbeLabel: "Last cron run"
 
+  # Dashboard (below status banner; respects search filter)
+  dashboardSectionTitle: "Fleet overview"
+  dashboardStatusMixLabel: "Current monitor mix (filtered)"
+  dashboardFleetFailsTitle: "Failed checks per day (fleet total)"
+  dashboardFleetFailsTotalHint: "failed checks in window"
+  dashboardFleetLatencyTitle: "Mean response time (monitors with data that day)"
+  graphSectionFailures: "Failed checks per day (this monitor)"
+  graphFailureDayHint: "failed check(s)"
+
   # Per-monitor collapsible "Details" (optional labels)
   monitorDetailsTitle: "Details & history"
   monitorDetailsPieSection: "Availability & response time (histogram window)"

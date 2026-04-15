@@ -6,6 +6,7 @@ import { useKeyPress } from '../functions/helpers'
 import { groupMonitorsForDisplay } from '../functions/groupMonitors'
 import MonitorCard from './monitorCard'
 import MonitorFilter from './monitorFilter'
+import DashboardOverviewCharts from './dashboardOverviewCharts'
 import MonitorStatusHeader from './monitorStatusHeader'
 import ThemeSwitcher from './themeSwitcher'
 
@@ -56,6 +57,10 @@ export default function StatusPage({
         </header>
         <MonitorStatusHeader
           kvMonitorsLastUpdate={kvMonitorsLastUpdate}
+          monitors={state.visible}
+          kvMonitors={kvMonitors}
+        />
+        <DashboardOverviewCharts
           monitors={state.visible}
           kvMonitors={kvMonitors}
         />

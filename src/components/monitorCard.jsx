@@ -1,4 +1,5 @@
 import config from '../generated/config.json'
+import MonitorFailureBars from './monitorFailureBars'
 import MonitorHistogram from './monitorHistogram'
 import MonitorLatencySparkline from './monitorLatencySparkline'
 import MonitorStatsRow from './monitorStatsRow'
@@ -57,6 +58,8 @@ export default function MonitorCard({ monitor, data }) {
         {config.settings.graphSectionAvailability ?? 'Availability by day'}
       </div>
       <MonitorHistogram monitorId={monitor.id} kvMonitor={data} />
+
+      <MonitorFailureBars monitorId={monitor.id} kvMonitor={data} />
 
       <MonitorLatencySparkline monitorId={monitor.id} kvMonitor={data} />
 

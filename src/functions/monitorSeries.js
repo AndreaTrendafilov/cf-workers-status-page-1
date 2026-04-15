@@ -173,6 +173,55 @@ export function computeLatencyAggregateStats(kvMonitor, daysInHistogram) {
 /**
  * Count monitors by lastCheck state for a visible monitor list.
  */
+/**
+ * Sum of `fails` across monitors for each calendar day in the histogram window.
+ */
+export function aggregateFailsPerDay(monitors, kvMonitors, daysInHistogram) {
+  const range = buildHistogramDateRange(daysInHistogram)
+  const totals = range.map((day) => ({ day, totalFails: 0 }))
+  const idx = new Map(range.map((d, i) => [d, i]))
+  for (const m of monitors) {
+    const km = kvMonitors?.[m.id]
+    if (!km?.firstCheck || !km.checks) {
+      continue
+    }
+    for (const day of range) {
+      if (day < km.firstCheck) {
+        continue
+      }
+      const row = km.checks[day]
+      if (!row || typeof row.fails !== 'number') {
+        continue
+      }
+      const i = idx.get(day)
+      if (i !== undefined) {
+        totals[i].totalFails += row.fails
+      }
+    }
+  }
+  return totals
+}
+
+/**
+ * Mean of per-monitor daily average latency (only monitors with data that day).
+ */
+export function aggregateMeanLatencyPerDay(monitors, kvMonitors, daysInHistogram) {
+  const range = buildHistogramDateRange(daysInHistogram)
+  return range.map((day) => {
+    let sum = 0
+    let n = 0
+    for (const m of monitors) {
+      const km = kvMonitors?.[m.id]
+      const v = averageLatencyForDay(km, day)
+      if (v != null) {
+        sum += v
+        n += 1
+      }
+    }
+    return { day, avgMs: n > 0 ? Math.round(sum / n) : null }
+  })
+}
+
 export function summarizeMonitorStates(monitors, kvMonitors) {
   let up = 0
   let degraded = 0
