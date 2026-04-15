@@ -114,4 +114,58 @@
   details.monitor-details[open] .monitor-details-chevron {
     transform: rotate(90deg);
   }
+
+  /* Fleet overview — match .card surfaces; SVG text uses explicit small size + muted fills for dark mode */
+  .fleet-overview-shell {
+    @apply mb-6 md:mb-8 rounded-xl overflow-hidden border;
+    @apply border-gruv-l-border dark:border-gruv-d-border;
+    @apply bg-gruv-l-surface dark:bg-gruv-d-surface;
+    box-shadow:
+      0 1px 2px rgba(60, 56, 54, 0.06),
+      0 2px 8px rgba(60, 56, 54, 0.04);
+  }
+
+  .dark .fleet-overview-shell {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.25),
+      0 2px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .fleet-chart-wrap {
+    @apply w-full overflow-hidden;
+    max-height: 4.25rem;
+  }
+
+  .fleet-chart-wrap svg {
+    @apply block w-full h-auto;
+    max-height: 4.25rem;
+  }
+
+  .fleet-chart-wrap svg text {
+    fill: #665c54;
+    font-size: 6.25px;
+  }
+
+  html.dark .fleet-chart-wrap svg text {
+    fill: #a89984;
+  }
+
+  .failure-chart-wrap svg text {
+    fill: #665c54;
+    font-size: 6.25px;
+  }
+
+  html.dark .failure-chart-wrap svg text {
+    fill: #a89984;
+  }
+
+  .failure-chart-wrap {
+    @apply w-full overflow-hidden;
+    max-height: 3.5rem;
+  }
+
+  .failure-chart-wrap svg {
+    @apply block w-full h-auto;
+    max-height: 3.5rem;
+  }
 }

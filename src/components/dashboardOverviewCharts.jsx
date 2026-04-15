@@ -7,11 +7,11 @@ import {
 } from '../functions/monitorSeries'
 
 const W = 400
-const H = 100
-const PAD_L = 44
-const PAD_R = 8
-const PAD_T = 8
-const PAD_B = 20
+const H = 72
+const PAD_L = 36
+const PAD_R = 6
+const PAD_T = 6
+const PAD_B = 14
 const INNER_W = W - PAD_L - PAD_R
 const INNER_H = H - PAD_T - PAD_B
 
@@ -25,7 +25,7 @@ function FleetFailsBars({ series }) {
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
-      className="w-full h-auto block text-gruv-l-fg dark:text-gruv-d-fg"
+      className="w-full h-auto block text-gruv-l-border dark:text-gruv-d-border"
       role="img"
       aria-label="Fleet failed checks per day"
     >
@@ -34,8 +34,8 @@ function FleetFailsBars({ series }) {
         y1={PAD_T + INNER_H}
         x2={W - PAD_R}
         y2={PAD_T + INNER_H}
-        stroke="#928374"
-        strokeOpacity="0.45"
+        stroke="currentColor"
+        strokeOpacity="0.42"
         strokeWidth="1"
       />
       {series.map((p, i) => {
@@ -51,8 +51,8 @@ function FleetFailsBars({ series }) {
               width={barWidth}
               height={hot ? h : 2}
               rx="1"
-              fill={hot ? '#fb4934' : '#928374'}
-              fillOpacity={hot ? 0.85 : 0.25}
+              fill={hot ? '#fb4934' : '#665c54'}
+              fillOpacity={hot ? 0.88 : 0.32}
             />
             <title>{`${p.day}: ${p.totalFails} failed check(s) fleet-wide`}</title>
           </g>
@@ -60,24 +60,24 @@ function FleetFailsBars({ series }) {
       })}
       <text
         x={PAD_L}
-        y={H - 5}
-        className="fill-current text-[9px] opacity-80 font-mono"
+        y={H - 4}
+        className="font-mono tabular-nums"
       >
         {series[0]?.day ?? ''}
       </text>
       <text
         x={W / 2}
-        y={H - 5}
+        y={H - 4}
         textAnchor="middle"
-        className="fill-current text-[9px] opacity-80 font-mono"
+        className="font-mono tabular-nums"
       >
         {n >= 3 ? series[Math.floor(n / 2)]?.day : ''}
       </text>
       <text
         x={W - PAD_R}
-        y={H - 5}
+        y={H - 4}
         textAnchor="end"
-        className="fill-current text-[9px] opacity-80 font-mono"
+        className="font-mono tabular-nums"
       >
         {series[n - 1]?.day ?? ''}
       </text>
@@ -123,14 +123,14 @@ function FleetLatencyLine({ series }) {
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
-      className="w-full h-auto block text-gruv-l-fg dark:text-gruv-d-fg"
+      className="w-full h-auto block text-gruv-l-border dark:text-gruv-d-border"
       role="img"
       aria-label="Fleet mean latency"
     >
       <defs>
         <linearGradient id="fleet-lat-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#d3869b" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#d3869b" stopOpacity="0.05" />
+          <stop offset="0%" stopColor="#d3869b" stopOpacity="0.38" />
+          <stop offset="100%" stopColor="#d3869b" stopOpacity="0.06" />
         </linearGradient>
       </defs>
       {gridYs.map((gy, gi) => (
@@ -140,18 +140,18 @@ function FleetLatencyLine({ series }) {
           y1={gy}
           x2={W - PAD_R}
           y2={gy}
-          stroke="#928374"
-          strokeOpacity="0.35"
+          stroke="currentColor"
+          strokeOpacity="0.32"
           strokeWidth="1"
         />
       ))}
       {tickVals.map((tv, ti) => (
         <text
           key={`tk-${ti}`}
-          x={PAD_L - 6}
-          y={gridYs[ti] + 4}
+          x={PAD_L - 4}
+          y={gridYs[ti] + 3}
           textAnchor="end"
-          className="fill-current text-[9px] font-mono tabular-nums opacity-70"
+          className="font-mono tabular-nums"
         >
           {tv}
         </text>
@@ -172,8 +172,8 @@ function FleetLatencyLine({ series }) {
             <path
               d={d}
               fill="none"
-              stroke="#d3869b"
-              strokeWidth="2"
+              stroke="#c27d9e"
+              strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -184,31 +184,31 @@ function FleetLatencyLine({ series }) {
         if (avgMs == null) return null
         return (
           <g key={`pt-${day}`}>
-            <circle cx={xAt(i)} cy={yAt(avgMs)} r="3" fill="#d3869b" />
+            <circle cx={xAt(i)} cy={yAt(avgMs)} r="2.25" fill="#c27d9e" />
             <title>{`${day}\n${avgMs} ms mean (monitors with data)`}</title>
           </g>
         )
       })}
       <text
         x={PAD_L}
-        y={H - 5}
-        className="fill-current text-[9px] opacity-80 font-mono"
+        y={H - 4}
+        className="font-mono tabular-nums"
       >
         {series[0]?.day ?? ''}
       </text>
       <text
         x={W / 2}
-        y={H - 5}
+        y={H - 4}
         textAnchor="middle"
-        className="fill-current text-[9px] opacity-80 font-mono"
+        className="font-mono tabular-nums"
       >
         {n >= 3 ? series[Math.floor(n / 2)]?.day : ''}
       </text>
       <text
         x={W - PAD_R}
-        y={H - 5}
+        y={H - 4}
         textAnchor="end"
-        className="fill-current text-[9px] opacity-80 font-mono"
+        className="font-mono tabular-nums"
       >
         {series[n - 1]?.day ?? ''}
       </text>
@@ -245,18 +245,18 @@ export default function DashboardOverviewCharts({ monitors, kvMonitors }) {
 
   return (
     <section
-      className="mb-6 md:mb-8 rounded-xl border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg-soft dark:bg-gruv-d-bg-soft/80 overflow-hidden"
+      className="fleet-overview-shell"
       aria-label={s.dashboardSectionTitle ?? 'Fleet overview'}
     >
-      <div className="px-4 py-3 sm:px-5 border-b border-gruv-l-border dark:border-gruv-d-border">
-        <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gruv-l-muted dark:text-gruv-d-muted">
+      <div className="px-3 py-2 sm:px-4 border-b border-gruv-l-border dark:border-gruv-d-border">
+        <h2 className="text-[10px] font-bold uppercase tracking-wider text-gruv-l-muted dark:text-gruv-d-muted leading-tight">
           {s.dashboardSectionTitle ?? 'Fleet overview'}
         </h2>
       </div>
 
-      <div className="p-4 sm:p-5 space-y-6">
+      <div className="p-3 sm:p-4 space-y-4">
         <div>
-          <div className="text-xs font-medium text-gruv-l-muted dark:text-gruv-d-muted mb-2">
+          <div className="text-[10px] font-medium text-gruv-l-muted dark:text-gruv-d-muted mb-1.5 leading-snug">
             {s.dashboardStatusMixLabel ?? 'Current monitor mix (filtered)'}
           </div>
           <div
@@ -288,7 +288,7 @@ export default function DashboardOverviewCharts({ monitors, kvMonitors }) {
               />
             )}
           </div>
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gruv-l-fg dark:text-gruv-d-fg">
+          <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[9px] leading-tight text-gruv-l-fg dark:text-gruv-d-fg">
             <span>
               <span className="text-gruv-accent-green">●</span> {up}{' '}
               {s.summaryMonitorsUp ?? 'up'}
@@ -310,30 +310,30 @@ export default function DashboardOverviewCharts({ monitors, kvMonitors }) {
         </div>
 
         <div
-          className={`grid grid-cols-1 gap-6 ${collect ? 'lg:grid-cols-2' : ''}`}
+          className={`grid grid-cols-1 gap-4 ${collect ? 'lg:grid-cols-2' : ''}`}
         >
           <div className="min-w-0">
-            <div className="flex flex-row justify-between items-baseline text-xs mb-1 font-medium text-gruv-l-muted dark:text-gruv-d-muted">
-              <span>
+            <div className="flex flex-row justify-between items-baseline gap-2 mb-1 text-[10px] font-medium text-gruv-l-muted dark:text-gruv-d-muted leading-snug">
+              <span className="min-w-0">
                 {s.dashboardFleetFailsTitle ?? 'Failed checks per day (fleet)'}
               </span>
-              <span className="font-mono tabular-nums text-[10px] opacity-80">
+              <span className="shrink-0 font-mono tabular-nums text-[9px] opacity-90 text-gruv-l-fg dark:text-gruv-d-fg">
                 Σ {failSeries.reduce((a, p) => a + p.totalFails, 0)}{' '}
                 {s.dashboardFleetFailsTotalHint ?? 'in window'}
               </span>
             </div>
-            <div className="rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 overflow-hidden">
+            <div className="fleet-chart-wrap rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg dark:bg-gruv-d-bg-soft">
               <FleetFailsBars series={failSeries} />
             </div>
           </div>
 
           {collect && (
             <div className="min-w-0">
-              <div className="text-xs mb-1 font-medium text-gruv-l-muted dark:text-gruv-d-muted">
+              <div className="text-[10px] mb-1 font-medium text-gruv-l-muted dark:text-gruv-d-muted leading-snug">
                 {s.dashboardFleetLatencyTitle ??
                   'Mean response time (monitors with data)'}
               </div>
-              <div className="rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 overflow-hidden">
+              <div className="fleet-chart-wrap rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg dark:bg-gruv-d-bg-soft">
                 <FleetLatencyLine series={latencySeries} />
               </div>
             </div>

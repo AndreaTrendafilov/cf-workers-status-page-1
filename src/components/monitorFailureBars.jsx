@@ -2,7 +2,7 @@ import config from '../generated/config.json'
 import { buildHistogramDateRange } from '../functions/monitorSeries'
 
 const W = 400
-const H = 80
+const H = 64
 const PAD_L = 36
 const PAD_R = 8
 const PAD_T = 6
@@ -35,23 +35,23 @@ export default function MonitorFailureBars({ monitorId, kvMonitor }) {
 
   return (
     <div className="mb-1 mt-2">
-      <div className="flex flex-row justify-between items-center text-gruv-l-muted dark:text-gruv-d-muted text-xs mb-1 font-medium">
+      <div className="flex flex-row justify-between items-center text-gruv-l-muted dark:text-gruv-d-muted text-[10px] mb-1 font-medium leading-snug gap-2">
         <span>
           {config.settings.graphSectionFailures ?? 'Failed checks per day'}
         </span>
         {anyFails && (
-          <span className="font-mono tabular-nums text-gruv-accent-yellow">
+          <span className="font-mono tabular-nums text-[9px] text-gruv-accent-yellow">
             peak {Math.max(...series.map((p) => p.fails))}/day
           </span>
         )}
       </div>
       <div
         key={`${monitorId}-fails`}
-        className="w-full min-w-0 mx-auto rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 overflow-hidden"
+        className="failure-chart-wrap w-full min-w-0 mx-auto rounded-lg border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg dark:bg-gruv-d-bg-soft overflow-hidden"
       >
         <svg
           viewBox={`0 0 ${W} ${H}`}
-          className="w-full h-auto block text-gruv-l-fg dark:text-gruv-d-fg"
+          className="w-full h-auto block text-gruv-l-border dark:text-gruv-d-border"
           role="img"
           aria-label="Failed checks per day"
         >
@@ -60,8 +60,8 @@ export default function MonitorFailureBars({ monitorId, kvMonitor }) {
             y1={PAD_T + INNER_H}
             x2={W - PAD_R}
             y2={PAD_T + INNER_H}
-            stroke="#928374"
-            strokeOpacity="0.35"
+            stroke="currentColor"
+            strokeOpacity="0.38"
             strokeWidth="1"
           />
           {series.map((p, i) => {
@@ -76,8 +76,8 @@ export default function MonitorFailureBars({ monitorId, kvMonitor }) {
                   width={barWidth}
                   height={hot ? h : 2}
                   rx="1"
-                  fill={hot ? '#fabd2f' : '#928374'}
-                  fillOpacity={hot ? 0.9 : 0.2}
+                  fill={hot ? '#fabd2f' : '#665c54'}
+                  fillOpacity={hot ? 0.92 : 0.3}
                 />
                 <title>
                   {p.day}: {p.fails}{' '}
@@ -88,16 +88,16 @@ export default function MonitorFailureBars({ monitorId, kvMonitor }) {
           })}
           <text
             x={PAD_L}
-            y={H - 4}
-            className="fill-current text-[8px] opacity-80 font-mono"
+            y={H - 3}
+            className="font-mono tabular-nums"
           >
             {series[0]?.day ?? ''}
           </text>
           <text
             x={W - PAD_R}
-            y={H - 4}
+            y={H - 3}
             textAnchor="end"
-            className="fill-current text-[8px] opacity-80 font-mono"
+            className="font-mono tabular-nums"
           >
             {series[n - 1]?.day ?? ''}
           </text>

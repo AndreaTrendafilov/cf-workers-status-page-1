@@ -35,6 +35,7 @@ settings:
   graphLatencyAggregateLabel: "Latency (histogram window)"
   graphLatencyRangeLabel: "min–max"
   graphLatencySamplesLabel: "days sampled"
+  graphLatencySamplesLabelSingular: "day sampled"
   statsProbeAgeLabel: "Probe age"
   statsFailStreakLabel: "Fail streak"
 
