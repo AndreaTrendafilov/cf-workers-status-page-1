@@ -54,7 +54,11 @@ export default function StatusPage({
             </div>
           </div>
         </header>
-        <MonitorStatusHeader kvMonitorsLastUpdate={kvMonitorsLastUpdate} />
+        <MonitorStatusHeader
+          kvMonitorsLastUpdate={kvMonitorsLastUpdate}
+          monitors={state.visible}
+          kvMonitors={kvMonitors}
+        />
         {groupMonitorsForDisplay(
           state.visible,
           config.settings.defaultMonitorGroup,

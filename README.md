@@ -31,6 +31,8 @@ For **GitHub Actions** deploys, you also need:
 - **Alert noise** — **`settings.alertAfterConsecutiveFailures`** (and per-monitor **`alertAfterConsecutiveFailures`**) so Slack/Telegram/Discord fire only after *N* failed checks in a row; recovery still notifies as soon as a check succeeds.
 - **Parallel probes** — all monitors are checked in parallel each cron run (watch [Worker subrequest limits](https://developers.cloudflare.com/workers/platform/limits/) if you add many monitors or retries).
 
+The UI shows extra **stats**: global counts (up / degraded / down / awaiting data) that respect the search filter, per-monitor **histogram-window latency** (avg + min–max + sample days), **probe age**, and **fail streak** when relevant.
+
 ## Deploy with GitHub Actions
 
 1. Fork or clone this repo and push to GitHub.

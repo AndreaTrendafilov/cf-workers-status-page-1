@@ -32,11 +32,27 @@ settings:
   graphLatencyTitle: "Response time trend"
   graphRecentLatencyLabel: "Last 7d avg"
   graphLatencyFailHint: "failed check(s) this day"
+  graphLatencyAggregateLabel: "Latency (histogram window)"
+  graphLatencyRangeLabel: "min–max"
+  graphLatencySamplesLabel: "days sampled"
+  statsProbeAgeLabel: "Probe age"
+  statsFailStreakLabel: "Fail streak"
+
+  # Header summary (filtered monitors)
+  summaryMonitorsUp: "up"
+  summaryMonitorsDegraded: "degraded"
+  summaryMonitorsDown: "down"
+  summaryMonitorsNoData: "awaiting first check"
+  summaryGlobalProbeLabel: "Last cron run"
 
   # Per-monitor collapsible "Details" (optional labels)
   monitorDetailsTitle: "Details & history"
   monitorDetailsPieSection: "Availability & response time (histogram window)"
   monitorDetailsLatencySection: "Daily avg latency"
+  monitorDetailsLatencyRangeTitle: "Range"
+  monitorDetailsLatencyEmpty: "No latency samples in this window yet."
+  monitorDetailsLatencyAxisOld: "Older"
+  monitorDetailsLatencyAxisNew: "Recent"
   monitorDetailsLogSection: "Recent checks"
   pieGoodDaysLabel: "All clear"
   pieBadDaysLabel: "With incidents"

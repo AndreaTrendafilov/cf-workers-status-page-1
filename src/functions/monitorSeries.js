@@ -147,3 +147,53 @@ export function averageRecentLatencyMs(series, maxDays) {
   const sum = slice.reduce((acc, p) => acc + p.avgMs, 0)
   return Math.round(sum / slice.length)
 }
+
+/**
+ * Min / max / mean of daily average latencies that have data in the histogram window.
+ */
+export function computeLatencyAggregateStats(kvMonitor, daysInHistogram) {
+  const series = computeLatencySeries(kvMonitor, daysInHistogram)
+  const values = series.map((p) => p.avgMs).filter((v) => v != null)
+  if (values.length === 0) {
+    return {
+      minMs: null,
+      maxMs: null,
+      avgMs: null,
+      samples: 0,
+    }
+  }
+  const minMs = Math.min(...values)
+  const maxMs = Math.max(...values)
+  const avgMs = Math.round(
+    values.reduce((acc, v) => acc + v, 0) / values.length,
+  )
+  return { minMs, maxMs, avgMs, samples: values.length }
+}
+
+/**
+ * Count monitors by lastCheck state for a visible monitor list.
+ */
+export function summarizeMonitorStates(monitors, kvMonitors) {
+  let up = 0
+  let degraded = 0
+  let down = 0
+  let noData = 0
+
+  for (const m of monitors) {
+    const d = kvMonitors?.[m.id]
+    const lc = d?.lastCheck
+    if (!lc || typeof lc.operational !== 'boolean') {
+      noData++
+      continue
+    }
+    if (!lc.operational) {
+      down++
+    } else if (lc.degraded) {
+      degraded++
+    } else {
+      up++
+    }
+  }
+
+  return { up, degraded, down, noData, total: monitors.length }
+}

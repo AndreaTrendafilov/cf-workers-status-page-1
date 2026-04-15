@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import config from '../generated/config.json'
+import { formatRelativeFromMs } from '../functions/relativeTime'
 import MonitorAvailabilityPie from './monitorAvailabilityPie'
 
 function formatTimestamp(ms) {
@@ -14,26 +15,6 @@ function formatTimestamp(ms) {
   } catch {
     return null
   }
-}
-
-function formatRelative(ms) {
-  if (ms == null || typeof ms !== 'number' || Number.isNaN(ms)) {
-    return null
-  }
-  const sec = Math.floor((Date.now() - ms) / 1000)
-  if (sec < 45) {
-    return 'just now'
-  }
-  const min = Math.floor(sec / 60)
-  if (min < 60) {
-    return `${min}m ago`
-  }
-  const h = Math.floor(min / 60)
-  if (h < 48) {
-    return `${h}h ago`
-  }
-  const d = Math.floor(h / 24)
-  return `${d}d ago`
 }
 
 function LogRow({ label, absolute, relative }) {
@@ -75,12 +56,14 @@ export default function MonitorDetailsPanel({ kvMonitor }) {
 
   const relChecked =
     typeof window !== 'undefined' && checkedAt
-      ? formatRelative(checkedAt)
+      ? formatRelativeFromMs(checkedAt)
       : null
   const relUp =
-    typeof window !== 'undefined' && upAt ? formatRelative(upAt) : null
+    typeof window !== 'undefined' && upAt ? formatRelativeFromMs(upAt) : null
   const relDown =
-    typeof window !== 'undefined' && downAt ? formatRelative(downAt) : null
+    typeof window !== 'undefined' && downAt
+      ? formatRelativeFromMs(downAt)
+      : null
 
   const statusLine =
     last &&
