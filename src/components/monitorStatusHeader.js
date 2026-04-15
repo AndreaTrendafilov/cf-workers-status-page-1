@@ -20,7 +20,9 @@ export default function MonitorStatusHeader({ kvMonitorsLastUpdate }) {
   }
 
   return (
-    <div className={`card mb-6 font-semibold ${classes[color]}`}>
+    <div
+      className={`card mt-8 sm:mt-10 mb-6 md:mb-8 font-semibold ${classes[color]}`}
+    >
       <div className="flex flex-row justify-between items-center">
         <div>{text}</div>
         {kvMonitorsLastUpdate.time && typeof window !== 'undefined' && (

@@ -34,18 +34,6 @@ function donutStyle(buckets) {
 }
 
 export default function MonitorAvailabilityPie({ kvMonitor }) {
-  if (typeof window === 'undefined') {
-    return (
-      <div className="space-y-3">
-        <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-8">
-          <div className="h-28 w-28 shrink-0 rounded-full bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 animate-pulse" />
-          <MonitorDetailsLatencyMini kvMonitor={kvMonitor} />
-        </div>
-        <div className="h-3 max-w-md rounded bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 animate-pulse" />
-      </div>
-    )
-  }
-
   const days = config.settings.daysInHistogram
   const buckets = computeDayBuckets(kvMonitor, days)
   const style = donutStyle(buckets)
@@ -56,9 +44,9 @@ export default function MonitorAvailabilityPie({ kvMonitor }) {
   const labelNone = s.pieNoDataDaysLabel ?? 'No data'
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-8">
-        <div className="flex flex-row items-center gap-4 flex-wrap shrink-0">
+    <div className="space-y-3 min-w-0">
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-8 min-w-0">
+        <div className="flex flex-row items-center gap-4 flex-wrap shrink-0 min-w-0">
           <div className="relative h-28 w-28 shrink-0">
             <div
               className="absolute inset-0 rounded-full shadow-inner"

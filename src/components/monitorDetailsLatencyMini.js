@@ -4,8 +4,21 @@ import {
   computeLatencySeries,
 } from '../functions/monitorSeries'
 
+function barTitle(day, avgMs, fails, s) {
+  if (avgMs == null) {
+    return `${day}: ${s.dayInHistogramNoData ?? 'No data'}`
+  }
+  let t = `${day}: ${avgMs} ms avg`
+  if (typeof fails === 'number' && fails > 0) {
+    t += ` · ${fails} ${s.graphLatencyFailHint ?? 'failed check(s)'}`
+  }
+  return t
+}
+
 /**
  * Compact response-time bars for the details drawer, shown next to the availability pie.
+ * Uses native `title` tooltips only — avoids overlapping absolutely-positioned popups
+ * when many narrow bars are shown (e.g. 90+ days).
  */
 export default function MonitorDetailsLatencyMini({ kvMonitor }) {
   const days = config.settings.daysInHistogram
@@ -22,15 +35,6 @@ export default function MonitorDetailsLatencyMini({ kvMonitor }) {
 
   if (!collect) {
     return null
-  }
-
-  if (typeof window === 'undefined') {
-    return (
-      <div className="w-full lg:flex-1 lg:min-w-0 lg:max-w-xl">
-        <div className="h-3 w-24 mb-2 rounded bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 animate-pulse" />
-        <div className="h-24 rounded-md bg-gruv-l-surface-2 dark:bg-gruv-d-surface-2 animate-pulse" />
-      </div>
-    )
   }
 
   const values = series.map((p) => p.avgMs).filter((v) => v != null)
@@ -59,36 +63,19 @@ export default function MonitorDetailsLatencyMini({ kvMonitor }) {
     return (
       <div
         key={key}
-        className="hitbox tooltip flex-1 min-w-0 h-full flex flex-col justify-end"
+        className="flex-1 min-w-0 h-full flex flex-col justify-end"
+        title={barTitle(day, avgMs, fails, s)}
       >
         <div
           className={barClass}
           style={{ height: avgMs != null ? `${heightPct}%` : '3px' }}
         />
-        <div className="content text-center py-1 px-2 mt-1.5 left-1/2 -ml-20 w-40 text-xs">
-          {day}
-          <br />
-          <span className="font-semibold">
-            {avgMs != null
-              ? `${avgMs} ms`
-              : s.dayInHistogramNoData ?? 'No data'}
-          </span>
-          {kvMonitor && kvMonitor.checks?.[day]?.fails > 0 && (
-            <>
-              <br />
-              <span className="text-gruv-accent-yellow dark:text-gruv-accent-yellow">
-                {kvMonitor.checks[day].fails}{' '}
-                {s.graphLatencyFailHint ?? 'failed'}
-              </span>
-            </>
-          )}
-        </div>
       </div>
     )
   })
 
   return (
-    <div className="w-full lg:flex-1 lg:min-w-0 lg:max-w-xl">
+    <div className="w-full lg:flex-1 lg:min-w-0 lg:max-w-xl min-h-0">
       <div className="flex flex-row flex-wrap justify-between items-baseline gap-x-2 gap-y-1 text-xs mb-2 text-gruv-l-muted dark:text-gruv-d-muted font-medium">
         <span className="uppercase tracking-wide">{title}</span>
         {recent7 != null && (
@@ -100,8 +87,10 @@ export default function MonitorDetailsLatencyMini({ kvMonitor }) {
           </span>
         )}
       </div>
-      <div className="flex flex-row items-end h-24 w-full min-w-0 gap-px rounded-md border border-gruv-l-border dark:border-gruv-d-border px-0.5 pb-0.5 bg-gruv-l-bg-soft/50 dark:bg-gruv-d-bg-soft/50">
-        {content}
+      <div className="overflow-x-auto overflow-y-hidden rounded-md border border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg-soft dark:bg-gruv-d-bg-soft">
+        <div className="flex flex-row items-end h-24 min-w-full w-max sm:w-full px-0.5 pb-0.5 gap-px">
+          {content}
+        </div>
       </div>
     </div>
   )

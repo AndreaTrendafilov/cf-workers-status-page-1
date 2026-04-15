@@ -108,8 +108,8 @@ export default function MonitorDetailsPanel({ kvMonitor }) {
         <span>{title}</span>
       </summary>
 
-      <div className="mt-3 space-y-4" data-relative-tick={tick}>
-        <div>
+      <div className="mt-3 space-y-4 min-w-0 overflow-x-hidden" data-relative-tick={tick}>
+        <div className="min-w-0">
           <div className="text-xs font-semibold uppercase tracking-wide text-gruv-l-muted dark:text-gruv-d-muted mb-2">
             {s.monitorDetailsPieSection ?? 'Days in the bar chart window'}
           </div>
