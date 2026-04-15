@@ -4,19 +4,8 @@ import {
   computeLatencySeries,
 } from '../functions/monitorSeries'
 
-function barTitle(day, avgMs, fails, s) {
-  if (avgMs == null) {
-    return `${day}: ${s.dayInHistogramNoData ?? 'No data'}`
-  }
-  let t = `${day}: ${avgMs} ms avg`
-  if (typeof fails === 'number' && fails > 0) {
-    t += ` · ${fails} ${s.graphLatencyFailHint ?? 'failed check(s)'}`
-  }
-  return t
-}
-
 /**
- * Compact response-time bars for the details drawer (next to availability pie).
+ * Latency stats for the details drawer (next to availability pie) — text only, no chart.
  */
 export default function MonitorDetailsLatencyMini({ kvMonitor }) {
   const days = config.settings.daysInHistogram
@@ -38,42 +27,6 @@ export default function MonitorDetailsLatencyMini({ kvMonitor }) {
   const values = series.map((p) => p.avgMs).filter((v) => v != null)
   const min = values.length ? Math.min(...values) : 0
   const max = values.length ? Math.max(...values) : 0
-  const span = Math.max(max - min, 1)
-
-  const content = series.map(({ day, avgMs }, key) => {
-    let heightPct = 0
-    let barClass =
-      'lat-bar-inner lat-mini-bar bg-gruv-l-border/80 dark:bg-gruv-d-surface-2/90'
-
-    const fails = kvMonitor?.checks?.[day]?.fails
-    if (avgMs != null) {
-      const norm = (avgMs - min) / span
-      heightPct = 12 + Math.round(norm * 88)
-      if (typeof fails === 'number' && fails > 0) {
-        barClass =
-          'lat-bar-inner lat-mini-bar bg-gruv-accent-yellow shadow-sm dark:shadow-none'
-      } else if (avgMs > min + span * 0.65) {
-        barClass =
-          'lat-bar-inner lat-mini-bar bg-gruv-accent-orange shadow-sm dark:shadow-none'
-      } else {
-        barClass =
-          'lat-bar-inner lat-mini-bar bg-gruv-accent-blue dark:bg-gruv-accent-aqua shadow-sm dark:shadow-none'
-      }
-    }
-
-    return (
-      <div
-        key={key}
-        className="flex-1 min-w-0 h-full flex flex-col justify-end group"
-        title={barTitle(day, avgMs, fails, s)}
-      >
-        <div
-          className={barClass}
-          style={{ height: avgMs != null ? `${heightPct}%` : '5px' }}
-        />
-      </div>
-    )
-  })
 
   const hasSamples = values.length > 0
   const rangeLabel =
@@ -130,31 +83,10 @@ export default function MonitorDetailsLatencyMini({ kvMonitor }) {
           )}
         </div>
 
-        {!hasSamples ? (
-          <p className="mt-4 rounded-lg border border-dashed border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg-soft/80 dark:bg-gruv-d-bg-soft/50 px-3 py-6 text-center text-sm text-gruv-l-muted dark:text-gruv-d-muted">
+        {!hasSamples && (
+          <p className="mt-3 rounded-lg border border-dashed border-gruv-l-border dark:border-gruv-d-border bg-gruv-l-bg-soft/80 dark:bg-gruv-d-bg-soft/50 px-3 py-4 text-center text-sm text-gruv-l-muted dark:text-gruv-d-muted">
             {s.monitorDetailsLatencyEmpty ?? 'No latency samples in this window yet.'}
           </p>
-        ) : (
-          <div className="mt-4 space-y-1.5">
-            <div className="relative min-h-[7rem] rounded-lg border border-gruv-l-border/90 dark:border-gruv-d-border bg-gruv-l-bg-soft dark:bg-gruv-d-bg-soft overflow-x-auto">
-              <div
-                className="pointer-events-none absolute inset-x-0 top-2 bottom-2 flex flex-col justify-between z-0"
-                aria-hidden
-              >
-                <div className="h-px bg-gruv-l-border/70 dark:bg-gruv-d-border/60" />
-                <div className="h-px bg-gruv-l-border/50 dark:bg-gruv-d-border/45" />
-                <div className="h-px bg-gruv-l-border/50 dark:bg-gruv-d-border/45" />
-                <div className="h-px bg-gruv-l-border/70 dark:bg-gruv-d-border/60" />
-              </div>
-              <div className="relative z-[1] flex flex-row items-end min-h-[7rem] h-28 w-full min-w-0 px-1 pt-2 pb-2 gap-px">
-                {content}
-              </div>
-            </div>
-            <div className="flex flex-row justify-between gap-6 px-1 text-[10px] font-medium uppercase tracking-wide text-gruv-l-muted dark:text-gruv-d-muted">
-              <span className="shrink-0">{s.monitorDetailsLatencyAxisOld ?? 'Older'}</span>
-              <span className="shrink-0 text-right">{s.monitorDetailsLatencyAxisNew ?? 'Recent'}</span>
-            </div>
-          </div>
         )}
       </div>
     </div>

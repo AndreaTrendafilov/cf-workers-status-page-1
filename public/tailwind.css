@@ -44,18 +44,6 @@
     @apply w-full mx-auto;
   }
 
-  .lat-bar-inner {
-    width: 85%;
-    min-height: 4px;
-    @apply mx-auto rounded-t-sm transition-colors;
-  }
-
-  /* Details drawer mini latency chart — slightly wider bars, clearer tops */
-  .lat-mini-bar {
-    width: 78%;
-    min-height: 5px;
-    @apply mx-auto rounded-t-md transition-colors;
-  }
   .hitbox {
     align-items: flex-end;
     box-sizing: border-box;
